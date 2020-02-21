@@ -4,6 +4,7 @@ const fs = require('fs').promises;
 const client = new Discord.Client();
 const { prefix, TOKEN } = require('./config.json');
 const { playSound } = require('./slavsound');
+const soundManifest = require('./sound_manifest');
 
 client.once('ready', () => {
   console.log('READY!');
