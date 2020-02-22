@@ -4,6 +4,7 @@ const fs = require('fs').promises;
 const client = new Discord.Client();
 const { prefix, TOKEN } = require('./config.json');
 const { playSound } = require('./slavsound');
+const { createSoundManifest } = require('./slav_utils');
 const soundManifest = require('./sound_manifest');
 
 client.once('ready', () => {
@@ -22,9 +23,17 @@ client.on('message', async message => {
     // Strip prefix from message to get command
     const command = message.content.substring(1);
 
+    if (command === 'create') {
+      createSoundManifest();
+    }
+    if (command === 'read') {
+      console.log(soundManifest);
+    }
+
     // Check if command is referencing a sound
     fs.readdir('./sounds')
       .then(soundList => {
+        // console.log(soundList);
         // Strip '.mp3' from list of files in sounds folder to make into args for playSound
         soundList.forEach((sound, index) => {
           soundList[index] = sound.slice(0, -4);
