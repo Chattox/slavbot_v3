@@ -16,8 +16,13 @@ const createSoundManifest = () => {
     soundList.forEach(sound => {
       // Check if the entry is a folder, if it is, skip it. If it's a file, add its name to the array
       if (!sound.isDirectory()) {
-        console.log(`Adding sound ${sound.name}`);
-        newSoundList.push(sound.name.slice(0, -4));
+        const soundName = sound.name.slice(0, -4);
+        if (soundManifest.randSounds.includes(soundName)) {
+          console.log(`${soundName} is already a random sound`);
+        } else {
+          console.log(`Adding sound ${sound.name}`);
+          newSoundList.push(sound.name.slice(0, -4));
+        }
       } else {
         console.log(`Skipping folder ${sound.name}`);
       }
