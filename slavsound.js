@@ -8,13 +8,12 @@ const playSound = async (sound, message) => {
     const connection = await message.member.voice.channel.join();
     const dispatcher = connection.play(`./sounds/${sound}.mp3`);
     dispatcher.on('start', () => {
-      message.delete().then(msg => {
-        console.log('Deleted command message');
-      });
-      console.log('playing!');
+      console.log(
+        `Playing "${sound}" in ${message.member.voice.channel.name}...`
+      );
     });
     dispatcher.on('finish', () => {
-      console.log('finished!');
+      console.log('Finished playing');
       connection.disconnect();
     });
 
@@ -26,7 +25,13 @@ const playSound = async (sound, message) => {
 from sound_manifest.json to pick a sound from, 
 and msg obj to join correct voice channel */
 const randSound = (soundLists, message) => {
-  console.log(soundLists);
+  // Create new array that will contain all possible random sounds
+  let randSounds = [];
+  // Populate array with combination of regular and random only sound lists from sound_manifest.json
+  randSounds = randSounds.concat(...soundLists);
+  // Pick a random sound from the array and play
+  randChoice = randSounds[Math.floor(Math.random() * randSounds.length)];
+  playSound(randChoice, message);
 };
 
 module.exports = { playSound, randSound };

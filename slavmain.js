@@ -13,62 +13,53 @@ client.once('ready', () => {
 
 // When get message, do thing
 client.on('message', async message => {
-  // If message author is self, don't do thing
-  if (message.author.id === client.user.id) {
+  // If message author is bot or no prefix, don't do thing
+  if (!message.content.startsWith(prefix) || message.author.bot) {
     return;
   }
 
-  // Check msg is valid command
-  if (message.content.startsWith(prefix)) {
-    // Strip prefix from message to get command
-    const command = message.content.substring(1);
+  // Strip prefix from message to get command
+  const command = message.content.substring(1);
 
-    // Log some info to console
+  // Log some info to console
+  console.log('----------');
+  const timeStamp = new Date();
+  console.log(timeStamp.toLocaleDateString(), timeStamp.toLocaleTimeString());
+  console.log(`User: ${message.author.username}`);
+  console.log(`Admin: ${message.author.id === ADMIN_ID}`);
+  console.log(`Command: ${command}`);
+
+  // Admin commands
+  if (command === 'create' && message.author.id === ADMIN_ID) {
+    createSoundManifest();
     console.log('----------');
-    const timeStamp = new Date();
-    console.log(timeStamp.toLocaleDateString(), timeStamp.toLocaleTimeString());
-    console.log(`User: ${message.author.username}`);
-    console.log(`Admin: ${message.author.id === ADMIN_ID}`);
-    console.log(`Command: ${command}`);
-
-    // Admin commands
-    if (command === 'create' && message.author.id === ADMIN_ID) {
-      createSoundManifest();
-    }
-    if (command === 'read' && message.author.id === ADMIN_ID) {
-      console.log(soundManifest);
-    }
-
-    // User commands
-
-    // Random sounds
-    // Random sound picked from all lists
-    if (command === 'rand') {
-      randSound([soundManifest.regularSounds, soundManifest.randSounds]);
-    }
-
-    // Specific sound command
-    // Check if command is referencing a sound
-    if (soundManifest.regularSounds.includes(command)) {
-      console.log(`Sound ${command}`);
-    }
-
-    // fs.readdir('./sounds')
-    //   .then(soundList => {
-    //     // console.log(soundList);
-    //     // Strip '.mp3' from list of files in sounds folder to make into args for playSound
-    //     soundList.forEach((sound, index) => {
-    //       soundList[index] = sound.slice(0, -4);
-    //     });
-    //     if (soundList.includes(command)) {
-    //       playSound(command, message);
-    //     }
-    //   })
-    //   .catch(err => {
-    //     console.error(err);
-    //   });
+  } else if (command === 'read' && message.author.id === ADMIN_ID) {
+    console.log(soundManifest);
     console.log('----------');
   }
+
+  // User commands
+
+  // Random sounds
+  // Random sound picked from all lists
+  else if (command === 'rand') {
+    randSound([soundManifest.regularSounds, soundManifest.randSounds], message);
+  }
+
+  // Specific sound command
+  // Check if command is referencing a sound
+  else if (soundManifest.regularSounds.includes(command)) {
+    playSound(command, message);
+  }
+
+  // If command not recognised
+  else {
+    message.author.send(`"${command}" is not a recognised command, урод.`);
+    console.log('Command not recognised');
+    console.log('----------');
+  }
+  //delete message when done
+  message.delete();
 });
 
 client.login(TOKEN);
