@@ -32,7 +32,6 @@ client.on('message', async message => {
   // Create possible list of sound commands based on if user is admin
   let soundCommands = soundManifest.regularSounds;
   if (message.author.id === ADMIN_ID) {
-    console.log('sound command admin');
     soundCommands += soundManifest.randSounds;
   }
 
@@ -73,6 +72,24 @@ client.on('message', async message => {
   }
   //delete message when done
   message.delete();
+});
+
+client.on('voiceStateUpdate', (oldState, newState) => {
+  if (oldState.id === client.user.id) {
+    return;
+  }
+  const oldStateChannel = oldState.channel;
+  const newStateChannel = newState.channel;
+
+  if (oldStateChannel === null) {
+    console.log(
+      `${newState.member.user.username} has joined ${newStateChannel.name}`
+    );
+  } else if (newStateChannel === null) {
+    console.log(
+      `${newState.member.user.username} has left ${oldStateChannel.name}`
+    );
+  }
 });
 
 client.login(TOKEN);
