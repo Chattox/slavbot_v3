@@ -54,7 +54,14 @@ client.on('message', async message => {
 
   // Specific sound command
   // Check if command is referencing a sound
-  else if (soundManifest.regularSounds.includes(command)) {
+  // If admin, add random only sounds to list of valid commands too
+  let soundCommands = soundManifest.regularSounds;
+  if (message.author.id === ADMIN_ID) {
+    console.log('sound command admin');
+    soundCommands += soundManifest.randSounds;
+  }
+  if (soundCommands.includes(command)) {
+    console.log(`playing sound ${command}`);
     playSound(command, message);
   }
 
