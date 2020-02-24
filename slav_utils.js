@@ -14,6 +14,7 @@ const createSoundManifest = () => {
     // Create and populate an array of sounds from sound folder that we'll be replacing the current manifest.regularsounds with
     const newSoundList = [];
     soundList.forEach(sound => {
+      // Check if the entry is a folder, if it is, skip it. If it's a file, add its name to the array
       if (!sound.isDirectory()) {
         console.log(`Adding sound ${sound.name}`);
         newSoundList.push(sound.name.slice(0, -4));

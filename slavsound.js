@@ -1,5 +1,8 @@
 const { client } = require('./slavmain.js');
 
+/* Plays a specific sound. Takes 2 args,
+sound to find specific soundfile and message obj
+ to join correct voice channel */
 const playSound = async (sound, message) => {
   if (message.member.voice.channel) {
     const connection = await message.member.voice.channel.join();
@@ -19,4 +22,11 @@ const playSound = async (sound, message) => {
   }
 };
 
-module.exports = { playSound };
+/* Random sounds. Takes 2 args, array of sound lists 
+from sound_manifest.json to pick a sound from, 
+and msg obj to join correct voice channel */
+const randSound = (soundLists, message) => {
+  console.log(soundLists);
+};
+
+module.exports = { playSound, randSound };
