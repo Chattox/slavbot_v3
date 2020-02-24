@@ -43,6 +43,14 @@ client.on('message', async message => {
   else if (command === 'rand') {
     randSound([soundManifest.regularSounds, soundManifest.randSounds], message);
   }
+  // Random sound picked from anomaly sound list
+  else if (command === 'randomaly') {
+    randSound(soundManifest.anomalySounds, message);
+  }
+  // Random sound picked from anime sound list
+  else if (command === 'randime') {
+    randSound(soundManifest.animeSounds, message);
+  }
 
   // Specific sound command
   // Check if command is referencing a sound
