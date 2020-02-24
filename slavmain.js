@@ -32,10 +32,8 @@ client.on('message', async message => {
   // Admin commands
   if (command === 'create' && message.author.id === ADMIN_ID) {
     createSoundManifest();
-    console.log('----------');
   } else if (command === 'read' && message.author.id === ADMIN_ID) {
     console.log(soundManifest);
-    console.log('----------');
   }
 
   // User commands
@@ -56,7 +54,6 @@ client.on('message', async message => {
   else {
     message.author.send(`"${command}" is not a recognised command, урод.`);
     console.log('Command not recognised');
-    console.log('----------');
   }
   //delete message when done
   message.delete();
