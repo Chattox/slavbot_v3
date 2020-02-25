@@ -6,8 +6,15 @@ const { prefix, TOKEN, ADMIN_ID } = require('./config.json');
 const { playSound, randSound } = require('./slavsound');
 const { createSoundManifest } = require('./slav_utils');
 const soundManifest = require('./sound_manifest');
+const commandList = [];
 
 client.once('ready', () => {
+  fs.readdir('./commands').then(files => {
+    files.forEach(file => {
+      commandList.push(file.slice(0, -3));
+    });
+    console.log(commandList);
+  });
   console.log('READY!');
 });
 
@@ -33,6 +40,10 @@ client.on('message', async message => {
   let soundCommands = soundManifest.regularSounds;
   if (message.author.id === ADMIN_ID) {
     soundCommands += soundManifest.randSounds;
+  }
+
+  if (commandList.includes(command)) {
+    console.log(`Recognised command: ${command}`);
   }
 
   // Admin commands
@@ -82,6 +93,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
   const newStateChannel = newState.channel;
 
   if (oldStateChannel === null) {
+    // Or if old channel was an afk channel
     console.log(
       `${newState.member.user.username} has joined ${newStateChannel.name}`
     );
@@ -95,3 +107,5 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 client.login(TOKEN);
 
 module.exports = { client };
+
+/* Separate commands out into individual files like in commands folder. On ready, readdir and make an array of all command filenames. On message, check command against filenames and execute if in that array. Else if check against sounds and go from there */
