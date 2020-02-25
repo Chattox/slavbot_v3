@@ -4,7 +4,6 @@ const fs = require('fs').promises;
 const client = new Discord.Client();
 const { prefix, TOKEN, ADMIN_ID } = require('./config.json');
 const { playSound, randSound } = require('./slavsound');
-const { createSoundManifest } = require('./slav_utils');
 const soundManifest = require('./sound_manifest');
 const commandList = [];
 
@@ -43,23 +42,24 @@ client.on('message', async message => {
   }
 
   if (commandList.includes(command)) {
-    console.log(`Recognised command: ${command}`);
+    let func = require(`./commands/${command}.js`);
+    func.execute(message, soundManifest);
   }
 
   // Admin commands
-  if (command === 'create' && message.author.id === ADMIN_ID) {
-    createSoundManifest();
-  } else if (command === 'read' && message.author.id === ADMIN_ID) {
-    console.log(soundManifest);
-  }
+  // if (command === 'create' && message.author.id === ADMIN_ID) {
+  //   createSoundManifest();
+  // } else if (command === 'read' && message.author.id === ADMIN_ID) {
+  //   console.log(soundManifest);
+  // }
 
   // User commands
 
   // Random sounds
   // Random sound picked from all lists
-  else if (command === 'rand') {
-    randSound([soundManifest.regularSounds, soundManifest.randSounds], message);
-  }
+  // else if (command === 'rand') {
+  //   randSound([soundManifest.regularSounds, soundManifest.randSounds], message);
+  // }
   // Random sound picked from anomaly sound list
   else if (command === 'randomaly') {
     randSound(soundManifest.anomalySounds, message);
