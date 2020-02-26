@@ -3,3 +3,4 @@ config.json
 sounds
 sound_manifest.json
 unused_commands
+regular_users.json

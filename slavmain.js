@@ -46,29 +46,6 @@ client.on('message', async message => {
     func.execute(message, soundManifest);
   }
 
-  // Admin commands
-  // if (command === 'create' && message.author.id === ADMIN_ID) {
-  //   createSoundManifest();
-  // } else if (command === 'read' && message.author.id === ADMIN_ID) {
-  //   console.log(soundManifest);
-  // }
-
-  // User commands
-
-  // Random sounds
-  // Random sound picked from all lists
-  // else if (command === 'rand') {
-  //   randSound([soundManifest.regularSounds, soundManifest.randSounds], message);
-  // }
-  // Random sound picked from anomaly sound list
-  else if (command === 'randomaly') {
-    randSound(soundManifest.anomalySounds, message);
-  }
-  // Random sound picked from anime sound list
-  else if (command === 'randime') {
-    randSound(soundManifest.animeSounds, message);
-  }
-
   // Specific sound command
   // Check if command is referencing a sound using array we made earlier
   else if (soundCommands.includes(command)) {
@@ -86,7 +63,7 @@ client.on('message', async message => {
 });
 
 client.on('voiceStateUpdate', (oldState, newState) => {
-  if (oldState.id === client.user.id) {
+  if (oldState.member.user.bot) {
     return;
   }
   const oldStateChannel = oldState.channel;
@@ -94,10 +71,12 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 
   if (oldStateChannel === null) {
     // Or if old channel was an afk channel
+    console.log('----------');
     console.log(
       `${newState.member.user.username} has joined ${newStateChannel.name}`
     );
   } else if (newStateChannel === null) {
+    console.log('----------');
     console.log(
       `${newState.member.user.username} has left ${oldStateChannel.name}`
     );
@@ -107,5 +86,3 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 client.login(TOKEN);
 
 module.exports = { client };
-
-/* Separate commands out into individual files like in commands folder. On ready, readdir and make an array of all command filenames. On message, check command against filenames and execute if in that array. Else if check against sounds and go from there */
