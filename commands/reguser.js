@@ -8,10 +8,12 @@ module.exports = {
     'creates a regular user object from given discord ID and adds to regular_users.json',
   execute: (message, args) => {
     const user_id = args[0];
+    // fetcher user object through guild to make sure user is on server command is given
     message.guild.members
       .fetch(user_id)
       .then(obj => {
         const user = obj.user;
+        // If user doesn't already exist, create regUser obj and write to file
         if (!regUsers.hasOwnProperty(user.id)) {
           regUsers[user.id] = {
             name: user.username,
@@ -29,7 +31,6 @@ module.exports = {
         } else {
           console.log('----------');
           console.log(`User ${user.username} already exists`);
-          console.log('----------');
         }
       })
       .catch(err => {

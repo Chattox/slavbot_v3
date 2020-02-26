@@ -25,7 +25,10 @@ client.on('message', async message => {
   }
 
   // Strip prefix separate command from args
-  const args = message.content.substring(1).split(' ');
+  const args = message.content
+    .substring(1)
+    .toLowerCase()
+    .split(' ');
   const command = args.shift();
 
   // Log some info to console
@@ -39,7 +42,9 @@ client.on('message', async message => {
   // Create possible list of sound commands based on if user is admin
   let soundCommands = soundManifest.regularSounds;
   if (message.author.id === ADMIN_ID) {
-    soundCommands += soundManifest.randSounds;
+    soundManifest.randSounds.forEach(sound => {
+      soundCommands.push(sound);
+    });
   }
 
   if (commandList.includes(command)) {
