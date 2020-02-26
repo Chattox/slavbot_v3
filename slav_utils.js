@@ -33,7 +33,7 @@ const createSoundManifest = () => {
     const jsonSoundManifest = JSON.stringify(soundManifest);
     fs.writeFile('./sound_manifest.json', jsonSoundManifest, 'utf8')
       .then(res => {
-        console.log('File written!');
+        console.log('sound_manifest.json written!');
       })
       .catch(err => {
         console.log(err);

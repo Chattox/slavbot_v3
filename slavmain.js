@@ -24,8 +24,9 @@ client.on('message', async message => {
     return;
   }
 
-  // Strip prefix from message to get command
-  const command = message.content.substring(1);
+  // Strip prefix separate command from args
+  const args = message.content.substring(1).split(' ');
+  const command = args.shift();
 
   // Log some info to console
   console.log('----------');
@@ -43,7 +44,11 @@ client.on('message', async message => {
 
   if (commandList.includes(command)) {
     let func = require(`./commands/${command}.js`);
-    func.execute(message, soundManifest);
+    if (args.length > 0) {
+      func.execute(message, args);
+    } else {
+      func.execute(message, soundManifest);
+    }
   }
 
   // Specific sound command
