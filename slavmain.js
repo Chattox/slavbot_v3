@@ -96,3 +96,18 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 client.login(TOKEN);
 
 module.exports = { client };
+
+/*
+Seperate isEnabled property from commands into reference JSON object.
+example:
+{
+  read: true,
+  create: false,
+  rand: true
+  etc..
+} 
+
+When checking if chat command is present in commandsList (line 50), also check command against ref obj to see if enabled or not. If command: true, .execute(), if command: false, send console logs and dm explaining.
+
+When bot starts up and populates commandsList (line 11), also check if each command has an entry in ref obj. If not, create one with default val of true.
+*/
