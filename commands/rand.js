@@ -6,7 +6,10 @@ const rand = {
   description:
     'plays a random sound chosen from a combined list of regular and random-only sounds',
   execute: function(message) {
-    randSound([soundManifest.regularSounds, soundManifest.randSounds], message);
+    randSound(
+      [soundManifest.regularSounds, soundManifest.randSounds],
+      message.member.voice.channel
+    );
   }
 };
 

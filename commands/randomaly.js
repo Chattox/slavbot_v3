@@ -5,7 +5,7 @@ const randomaly = {
   name: 'randomaly',
   description: 'plays a random anomaly sound',
   execute: function(message) {
-    randSound([soundManifest.anomalySounds], message);
+    randSound([soundManifest.anomalySounds], message.member.voice.channel);
   }
 };
 

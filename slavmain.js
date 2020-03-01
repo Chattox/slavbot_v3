@@ -2,7 +2,7 @@
 const Discord = require('discord.js');
 const fs = require('fs').promises;
 const client = new Discord.Client();
-const { prefix, TOKEN, ADMIN_ID } = require('./config.json');
+const { prefix, TOKEN, ADMIN_ID, AFK_ID, SMORD_ID } = require('./config.json');
 const { playSound, randSound } = require('./slavsound');
 const soundManifest = require('./sound_manifest');
 const { isEqual } = require('./slav_utils');
@@ -93,8 +93,11 @@ client.on('message', async message => {
   // Specific sound command
   // Check if command is referencing a sound using array we made earlier
   else if (soundCommands.includes(command)) {
-    console.log(`playing sound ${command}`);
-    playSound(command, message);
+    if (message.member.voice.channel) {
+      playSound(command, message.member.voice.channel);
+    } else {
+      console.log('User was not in a voice channel');
+    }
   }
 
   // If command not recognised
@@ -114,35 +117,29 @@ client.on('voiceStateUpdate', (oldState, newState) => {
   const oldStateChannel = oldState.channel;
   const newStateChannel = newState.channel;
 
-  if (oldStateChannel === null) {
-    // Or if old channel was an afk channel
+  if (oldStateChannel === null || oldState.channelID === AFK_ID) {
     console.log('----------');
     console.log(
       `${newState.member.user.username} has joined ${newStateChannel.name}`
     );
+    const regUsers = require('./regular_users.json');
+    if (regUsers[newState.id].joinSound !== 'none') {
+      playSound(regUsers[newState.id].joinSound, newState.channel);
+    } else if (newState.id === SMORD_ID) {
+      randSound([soundManifest.coinSounds], newState.channel);
+    }
   } else if (newStateChannel === null) {
     console.log('----------');
     console.log(
       `${newState.member.user.username} has left ${oldStateChannel.name}`
     );
+    const regUsers = require('./regular_users.json');
+    if (regUsers[oldState.id].leaveSound !== 'none') {
+      playSound(regUsers[newState.id].leaveSound, oldState.channel);
+    }
   }
 });
 
 client.login(TOKEN);
 
 module.exports = { client };
-
-/*
-Seperate isEnabled property from commands into reference JSON object.
-example:
-{
-  read: true,
-  create: false,
-  rand: true
-  etc..
-} 
-
-When checking if chat command is present in commandsList (line 50), also check command against ref obj to see if enabled or not. If command: true, .execute(), if command: false, send console logs and dm explaining.
-
-When bot starts up and populates commandsList (line 11), also check if each command has an entry in ref obj. If not, create one with default val of true.
-*/

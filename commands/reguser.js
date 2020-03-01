@@ -49,4 +49,4 @@ const reguser = {
   }
 };
 
-module.exports = regname;
+module.exports = reguser;
