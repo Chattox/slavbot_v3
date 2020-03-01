@@ -62,6 +62,7 @@ client.on('message', async message => {
   console.log(`User: ${message.author.username}`);
   console.log(`Admin: ${message.author.id === ADMIN_ID}`);
   console.log(`Command: ${command}`);
+  console.log(`Args: ${args}`);
 
   // Create possible list of sound commands based on if user is admin
   let soundCommands = soundManifest.regularSounds;
