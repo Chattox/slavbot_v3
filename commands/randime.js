@@ -4,7 +4,6 @@ const { randSound } = require('../slavsound');
 const randime = {
   name: 'randime',
   description: 'plays a random anime sound',
-  isEnabled: true,
   execute: function(message) {
     if (this.isEnabled) {
       randSound([soundManifest.animeSounds], message);

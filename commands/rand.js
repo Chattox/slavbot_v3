@@ -5,7 +5,6 @@ const rand = {
   name: 'rand',
   description:
     'plays a random sound chosen from a combined list of regular and random-only sounds',
-  isEnabled: true,
   execute: function(message) {
     if (this.isEnabled) {
       randSound(

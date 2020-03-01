@@ -3,7 +3,6 @@ const { ADMIN_ID } = require('../config.json');
 const read = {
   name: 'read',
   description: 'Console logs the soundManifest object',
-  isEnabled: true,
   execute: function(message, args) {
     console.log(this.isEnabled);
     if (this.isEnabled) {

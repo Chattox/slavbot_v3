@@ -5,16 +5,40 @@ const client = new Discord.Client();
 const { prefix, TOKEN, ADMIN_ID } = require('./config.json');
 const { playSound, randSound } = require('./slavsound');
 const soundManifest = require('./sound_manifest');
-const commandList = [];
+const { isEqual } = require('./slav_utils');
 
 client.once('ready', () => {
-  fs.readdir('./commands').then(files => {
-    files.forEach(file => {
-      commandList.push(file.slice(0, -3));
-    });
-    console.log(commandList);
+  fs.readFile('./command_list.json').then(data => {
+    console.log('Checking for new commands...');
+    const commandListFile = JSON.parse(data);
+    const cmdListFileOrig = {};
+    Object.assign(cmdListFileOrig, commandListFile);
+    fs.readdir('./commands')
+      .then(files => {
+        files.forEach(file => {
+          commandName = file.slice(0, -3);
+          if (!Object.keys(commandListFile).includes(commandName)) {
+            console.log(`New command: ${commandName}!`);
+            commandListFile[commandName] = true;
+          }
+        });
+        if (isEqual(commandListFile, cmdListFileOrig) === false) {
+          const jsonCommandListFile = JSON.stringify(commandListFile);
+          fs.writeFile('./command_list.json', jsonCommandListFile, 'utf8')
+            .then(res => {
+              console.log('command_list.json written!');
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        } else {
+          console.log('No new commands found!');
+        }
+      })
+      .then(() => {
+        console.log('READY!');
+      });
   });
-  console.log('READY!');
 });
 
 // When get message, do thing
@@ -47,12 +71,16 @@ client.on('message', async message => {
     });
   }
 
-  if (commandList.includes(command)) {
-    let func = require(`./commands/${command}.js`);
-    if (args.length > 0) {
-      func.execute(message, args);
-    } else {
-      func.execute(message, soundManifest);
+  // Check command against commandlist, if exists check if enabled, if enabled do the thing
+  const commandList = require('./command_list.json');
+  if (Object.keys(commandList).includes(command)) {
+    if (commandList[command] === true) {
+      let func = require(`./commands/${command}.js`);
+      if (args.length > 0) {
+        func.execute(message, args);
+      } else {
+        func.execute(message, soundManifest);
+      }
     }
   }
 
@@ -72,6 +100,7 @@ client.on('message', async message => {
   message.delete();
 });
 
+// Voice state update (joining/leaving channels)
 client.on('voiceStateUpdate', (oldState, newState) => {
   if (oldState.member.user.bot) {
     return;
