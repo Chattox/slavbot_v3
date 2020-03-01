@@ -5,13 +5,7 @@ const randime = {
   name: 'randime',
   description: 'plays a random anime sound',
   execute: function(message) {
-    if (this.isEnabled) {
-      randSound([soundManifest.animeSounds], message);
-    } else {
-      console.log('----------');
-      console.log('Command is disabled');
-      message.author.send('This command is disabled!');
-    }
+    randSound([soundManifest.animeSounds], message);
   }
 };
 

@@ -5,18 +5,12 @@ const read = {
   description: 'Console logs the soundManifest object',
   execute: function(message, args) {
     console.log(this.isEnabled);
-    if (this.isEnabled) {
-      if (message.author.id === ADMIN_ID) {
-        console.log(args);
-      } else {
-        console.log('----------');
-        console.log('User is not admin');
-        message.author.send('This command is for admins only, blyat');
-      }
+    if (message.author.id === ADMIN_ID) {
+      console.log(args);
     } else {
       console.log('----------');
-      console.log('Command is disabled');
-      message.author.send('This command is disabled!');
+      console.log('User is not admin');
+      message.author.send('This command is for admins only, blyat');
     }
   }
 };

@@ -74,13 +74,18 @@ client.on('message', async message => {
   // Check command against commandlist, if exists check if enabled, if enabled do the thing
   const commandList = require('./command_list.json');
   if (Object.keys(commandList).includes(command)) {
-    if (commandList[command] === true) {
+    if (commandList[command] === true || message.author.id === ADMIN_ID) {
       let func = require(`./commands/${command}.js`);
       if (args.length > 0) {
         func.execute(message, args);
       } else {
         func.execute(message, soundManifest);
       }
+    } else {
+      console.log('----------');
+      console.log('Command is disabled');
+      console.log(`Notifying ${message.author.username}`);
+      message.author.send('This command is disabled!');
     }
   }
 

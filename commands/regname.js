@@ -3,10 +3,10 @@ const regUsers = require('../regular_users');
 const fs = require('fs').promises;
 const { ADMIN_ID } = require('../config.json');
 
-module.exports = {
+const regname = {
   name: 'regname',
   description: 'updates the name property of existing regular user object',
-  execute: (message, args) => {
+  execute: function(message, args) {
     if (message.author.id === ADMIN_ID) {
       if (regUsers[args[0]]) {
         const oldName = regUsers[args[0]].name;
@@ -33,3 +33,5 @@ module.exports = {
     }
   }
 };
+
+module.exports = regname;
