@@ -15,6 +15,7 @@ const playSound = async (sound, channel) => {
   });
 
   dispatcher.on('error', console.error);
+  return dispatcher;
 };
 
 // For users joining/leaving channels, same as playSound but takes voiceStateUpdate obj instead of message
