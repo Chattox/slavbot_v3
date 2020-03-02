@@ -65,7 +65,7 @@ client.on('message', async message => {
   console.log(`Args: ${args}`);
 
   // Create possible list of sound commands based on if user is admin
-  let soundCommands = soundManifest.regularSounds;
+  let soundCommands = [...soundManifest.regularSounds];
   if (message.author.id === ADMIN_ID) {
     soundManifest.randSounds.forEach(sound => {
       soundCommands.push(sound);
@@ -118,7 +118,10 @@ client.on('voiceStateUpdate', (oldState, newState) => {
   const newStateChannel = newState.channel;
 
   if (oldStateChannel === null || oldState.channelID === AFK_ID) {
+    // For user joining voice, or coming from AFK channel
     console.log('----------');
+    const timeStamp = new Date();
+    console.log(timeStamp.toLocaleDateString(), timeStamp.toLocaleTimeString());
     console.log(
       `${newState.member.user.username} has joined ${newStateChannel.name}`
     );
@@ -129,7 +132,10 @@ client.on('voiceStateUpdate', (oldState, newState) => {
       randSound([soundManifest.coinSounds], newState.channel);
     }
   } else if (newStateChannel === null) {
+    // For user leaving voice
     console.log('----------');
+    const timeStamp = new Date();
+    console.log(timeStamp.toLocaleDateString(), timeStamp.toLocaleTimeString());
     console.log(
       `${newState.member.user.username} has left ${oldStateChannel.name}`
     );
