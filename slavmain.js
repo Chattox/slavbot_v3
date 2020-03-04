@@ -8,6 +8,7 @@ const soundManifest = require('./sound_manifest');
 const { isEqual } = require('./slav_utils');
 
 client.once('ready', () => {
+  // Read all filenames of the commands dir to check for new commands
   fs.readFile('./command_list.json').then(data => {
     console.log('Checking for new commands...');
     const commandListFile = JSON.parse(data);
@@ -15,6 +16,7 @@ client.once('ready', () => {
     Object.assign(cmdListFileOrig, commandListFile);
     fs.readdir('./commands')
       .then(files => {
+        // Check each file name to see if it has an entry in the cmd ref obj, if not then add it w/ default val of true (enabled)
         files.forEach(file => {
           commandName = file.slice(0, -3);
           if (!Object.keys(commandListFile).includes(commandName)) {
@@ -22,6 +24,16 @@ client.once('ready', () => {
             commandListFile[commandName] = true;
           }
         });
+        // Go through each property on the ref obj and check against the array of file names. If a command has been removed from the cmd folder, remove it from the ref obj
+        const fileList = files.map(file => {
+          return file.slice(0, -3);
+        });
+        for (cmd in commandListFile) {
+          if (!fileList.includes(cmd)) {
+            delete commandListFile[cmd];
+          }
+        }
+        // If the commands ref obj has changed, overwrite the existing ref obj in the file
         if (isEqual(commandListFile, cmdListFileOrig) === false) {
           const jsonCommandListFile = JSON.stringify(commandListFile);
           fs.writeFile('./command_list.json', jsonCommandListFile, 'utf8')
