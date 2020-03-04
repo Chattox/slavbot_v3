@@ -24,12 +24,6 @@ const migrate = {
     playSound('leeroy', origin)
       .then(dispatcher => {
         dispatcher.on('finish', () => {
-          // console.log(dispatcher);
-          // const mems = [...origin.members];
-          // console.log(mems);
-          // mems.forEach(member => {
-          //   member.voice.setChannel(destination);
-          // });
           setTimeout(() => {
             origin.members.forEach(member => {
               if (!member.bot) {
