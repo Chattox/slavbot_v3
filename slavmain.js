@@ -2,7 +2,7 @@
 const Discord = require('discord.js');
 const fs = require('fs').promises;
 const client = new Discord.Client();
-const { prefix, TOKEN, ADMIN_ID, AFK_ID, SMORD_ID } = require('./config.json');
+const { prefix, TOKEN, ADMIN_ID, SMORD_ID } = require('./config.json');
 const { playSound, randSound } = require('./slavsound');
 const soundManifest = require('./sound_manifest');
 const { isEqual } = require('./slav_utils');
@@ -134,8 +134,6 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     oldState.channelID === oldState.guild.afkChannelID
   ) {
     // For user joining voice, or coming from AFK channel
-    console.log(oldState.guild);
-
     console.log('----------');
     const timeStamp = new Date();
     console.log(timeStamp.toLocaleDateString(), timeStamp.toLocaleTimeString());
