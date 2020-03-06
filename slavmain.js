@@ -141,10 +141,12 @@ client.on('voiceStateUpdate', (oldState, newState) => {
       `${newState.member.user.username} has joined ${newStateChannel.name}`
     );
     const regUsers = require('./regular_users.json');
-    if (regUsers[newState.id].joinSound !== 'none') {
-      playSound(regUsers[newState.id].joinSound, newState.channel);
-    } else if (newState.id === SMORD_ID) {
-      randSound([soundManifest.coinSounds], newState.channel);
+    if (newState.member.id in regUsers) {
+      if (regUsers[newState.id].joinSound !== 'none') {
+        playSound(regUsers[newState.id].joinSound, newState.channel);
+      } else if (newState.id === SMORD_ID) {
+        randSound([soundManifest.coinSounds], newState.channel);
+      }
     }
   } else if (newStateChannel === null) {
     // For user leaving voice
@@ -155,8 +157,10 @@ client.on('voiceStateUpdate', (oldState, newState) => {
       `${newState.member.user.username} has left ${oldStateChannel.name}`
     );
     const regUsers = require('./regular_users.json');
-    if (regUsers[oldState.id].leaveSound !== 'none') {
-      playSound(regUsers[newState.id].leaveSound, oldState.channel);
+    if (oldState.member.id in regUsers) {
+      if (regUsers[oldState.id].leaveSound !== 'none') {
+        playSound(regUsers[newState.id].leaveSound, oldState.channel);
+      }
     }
   }
 });
