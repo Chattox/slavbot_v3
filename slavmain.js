@@ -82,6 +82,9 @@ client.on('message', async message => {
     soundManifest.randSounds.forEach(sound => {
       soundCommands.push(sound);
     });
+    soundManifest.coinSounds.forEach(sound => {
+      soundCommands.push(sound);
+    });
   }
 
   // Check command against commandlist, if exists check if enabled, if enabled do the thing
@@ -169,3 +172,9 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 client.login(TOKEN);
 
 module.exports = { client };
+
+/*
+  TO-DO:
+  - Add ability to add sounds to specific randlists via chat command
+  - Fix !create overwriting edited random lists with lists loaded at startup
+*/
