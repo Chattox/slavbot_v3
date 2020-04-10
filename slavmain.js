@@ -9,15 +9,15 @@ const { isEqual } = require('./slav_utils');
 
 client.once('ready', () => {
   // Read all filenames of the commands dir to check for new commands
-  fs.readFile('./command_list.json').then(data => {
+  fs.readFile('./command_list.json').then((data) => {
     console.log('Checking for new commands...');
     const commandListFile = JSON.parse(data);
     const cmdListFileOrig = {};
     Object.assign(cmdListFileOrig, commandListFile);
     fs.readdir('./commands')
-      .then(files => {
+      .then((files) => {
         // Check each file name to see if it has an entry in the cmd ref obj, if not then add it w/ default val of true (enabled)
-        files.forEach(file => {
+        files.forEach((file) => {
           commandName = file.slice(0, -3);
           if (!Object.keys(commandListFile).includes(commandName)) {
             console.log(`New command: ${commandName}!`);
@@ -25,7 +25,7 @@ client.once('ready', () => {
           }
         });
         // Go through each property on the ref obj and check against the array of file names. If a command has been removed from the cmd folder, remove it from the ref obj
-        const fileList = files.map(file => {
+        const fileList = files.map((file) => {
           return file.slice(0, -3);
         });
         for (cmd in commandListFile) {
@@ -37,10 +37,10 @@ client.once('ready', () => {
         if (isEqual(commandListFile, cmdListFileOrig) === false) {
           const jsonCommandListFile = JSON.stringify(commandListFile);
           fs.writeFile('./command_list.json', jsonCommandListFile, 'utf8')
-            .then(res => {
+            .then((res) => {
               console.log('command_list.json written!');
             })
-            .catch(err => {
+            .catch((err) => {
               console.log(err);
             });
         } else {
@@ -54,17 +54,14 @@ client.once('ready', () => {
 });
 
 // When get message, do thing
-client.on('message', async message => {
+client.on('message', async (message) => {
   // If message author is bot or no prefix, don't do thing
   if (!message.content.startsWith(prefix) || message.author.bot) {
     return;
   }
 
   // Strip prefix separate command from args
-  const args = message.content
-    .substring(1)
-    .toLowerCase()
-    .split(' ');
+  const args = message.content.substring(1).toLowerCase().split(' ');
   const command = args.shift();
 
   // Log some info to console
@@ -79,10 +76,10 @@ client.on('message', async message => {
   // Create possible list of sound commands based on if user is admin
   let soundCommands = [...soundManifest.regularSounds];
   if (message.author.id === ADMIN_ID) {
-    soundManifest.randSounds.forEach(sound => {
+    soundManifest.randSounds.forEach((sound) => {
       soundCommands.push(sound);
     });
-    soundManifest.coinSounds.forEach(sound => {
+    soundManifest.coinSounds.forEach((sound) => {
       soundCommands.push(sound);
     });
   }
@@ -141,9 +138,17 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     console.log('----------');
     const timeStamp = new Date();
     console.log(timeStamp.toLocaleDateString(), timeStamp.toLocaleTimeString());
-    console.log(
-      `${newState.member.user.username} has joined ${newStateChannel.name}`
-    );
+    if (newStateChannel === null) {
+      console.log(
+        `${newState.member.user.username} has joined a channel but could not get channel information`
+      );
+    } else {
+      console.log(
+        `${newState.member.user.username} has joined ${
+          newStateChannel.name || 'no name'
+        }`
+      );
+    }
     const regUsers = require('./regular_users.json');
     if (newState.member.id in regUsers) {
       if (regUsers[newState.id].joinSound !== 'none') {
