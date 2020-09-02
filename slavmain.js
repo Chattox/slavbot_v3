@@ -154,7 +154,8 @@ client.on('voiceStateUpdate', (oldState, newState) => {
       if (regUsers[newState.id].joinSound !== 'none') {
         playSound(regUsers[newState.id].joinSound, newState.channel);
       } else if (newState.id === SMORD_ID) {
-        randSound([soundManifest.coinSounds], newState.channel);
+        // This bit is literally just because smord is special
+        randSound([soundManifest.smordHypeSounds], newState.channel);
       }
     }
   } else if (newStateChannel === null) {
