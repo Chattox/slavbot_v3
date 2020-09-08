@@ -6,19 +6,19 @@ const { ADMIN_ID } = require('../config.json');
 const regname = {
   name: 'regname',
   description: 'updates the name property of existing regular user object',
-  execute: function(message, args) {
+  execute: function (message, args) {
     if (message.author.id === ADMIN_ID) {
       if (regUsers[args[0]]) {
         const oldName = regUsers[args[0]].name;
         regUsers[args[0]].name = args[1];
         const formattedRegUsers = JSON.stringify(regUsers);
         fs.writeFile('./regular_users.json', formattedRegUsers, 'utf8')
-          .then(res => {
+          .then((res) => {
             console.log(
               `User "${oldName}" updated to "${regUsers[args[0]].name}"!`
             );
           })
-          .catch(err => {
+          .catch((err) => {
             console.log(err);
           });
       } else {
@@ -29,9 +29,8 @@ const regname = {
       console.log('----------');
       console.log('User is not admin');
       message.author.send('This command is for admins only, blyat');
-      message.delete();
     }
-  }
+  },
 };
 
 module.exports = regname;

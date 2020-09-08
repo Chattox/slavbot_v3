@@ -7,7 +7,7 @@ const regleave = {
   name: 'regleave',
   description:
     'updates the leave sound for given reguser. Set to "none" to remove',
-  execute: function(message, args) {
+  execute: function (message, args) {
     const userID = args[0];
     const leaveSound = args[1];
     if (message.author.id === ADMIN_ID) {
@@ -33,9 +33,8 @@ const regleave = {
       console.log('----------');
       console.log('User is not admin');
       message.author.send('This command is for admins only, blyat');
-      message.delete();
     }
-  }
+  },
 };
 
 module.exports = regleave;

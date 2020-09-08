@@ -7,7 +7,7 @@ const regjoin = {
   name: 'regjoin',
   description:
     'updates the join sound for given reguser. Set to "none" to remove',
-  execute: function(message, args) {
+  execute: function (message, args) {
     const userID = args[0];
     const joinSound = args[1];
     if (message.author.id === ADMIN_ID) {
@@ -33,9 +33,8 @@ const regjoin = {
       console.log('----------');
       console.log('User is not admin');
       message.author.send('This command is for admins only, blyat');
-      message.delete();
     }
-  }
+  },
 };
 
 module.exports = regjoin;
