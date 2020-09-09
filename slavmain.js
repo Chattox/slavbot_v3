@@ -5,7 +5,7 @@ const client = new Discord.Client();
 const { prefix, TOKEN, ADMIN_ID, SMORD_ID } = require('./config.json');
 const { playSound, randSound } = require('./slavsound');
 const soundManifest = require('./sound_manifest');
-const { isEqual } = require('./slav_utils');
+const { isEqual } = require('./utils/isEqual');
 
 client.once('ready', () => {
   // Read all filenames of the commands dir to check for new commands
