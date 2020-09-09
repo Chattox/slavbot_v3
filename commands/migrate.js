@@ -1,11 +1,11 @@
 const { playSound } = require('../slavsound');
-const { ADMIN_ID } = require('../config.json');
+const { isAdmin } = require('../utils/isAdmin');
 
 const migrate = {
   name: 'migrate',
   description: 'moves all users from one channel to another',
   execute: function (message, args) {
-    if (message.author.id === ADMIN_ID) {
+    if (isAdmin(message)) {
       const originName = args[0].replace(/_/g, ' ');
       const destinationName = args[1].replace(/_/g, ' ');
       let origin = {};
@@ -38,10 +38,6 @@ const migrate = {
         .catch((err) => {
           console.log(err);
         });
-    } else {
-      console.log('----------');
-      console.log('User is not admin');
-      message.author.send('This command is for admins only, blyat');
     }
   },
 };

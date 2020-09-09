@@ -1,12 +1,12 @@
 const commandList = require('../command_list.json');
 const fs = require('fs').promises;
-const { ADMIN_ID } = require('../config.json');
+const { isAdmin } = require('../utils/isAdmin');
 
 const enable = {
   name: 'enable',
   description: 'enable a command to be used in slavbot',
-  execute: function(message, args) {
-    if (message.author.id === ADMIN_ID) {
+  execute: function (message, args) {
+    if (isAdmin(message)) {
       if (Object.keys(commandList).includes(args[0])) {
         commandList[args[0]] = true;
         const jsonCommandList = JSON.stringify(commandList);
@@ -19,12 +19,8 @@ const enable = {
         console.log('----------');
         console.log(`${args[0]} is not a recognised command`);
       }
-    } else {
-      console.log('----------');
-      console.log('User is not admin');
-      message.author.send('This command is for admins only, blyat');
     }
-  }
+  },
 };
 
 module.exports = enable;

@@ -1,7 +1,7 @@
 const soundManifest = require('../sound_manifest');
 const regUsers = require('../regular_users');
 const fs = require('fs').promises;
-const { ADMIN_ID } = require('../config.json');
+const { isAdmin } = require('../utils/isAdmin');
 
 const regleave = {
   name: 'regleave',
@@ -10,7 +10,7 @@ const regleave = {
   execute: function (message, args) {
     const userID = args[0];
     const leaveSound = args[1];
-    if (message.author.id === ADMIN_ID) {
+    if (isAdmin(message)) {
       if (
         leaveSound === 'none' ||
         (soundManifest.regularSounds.includes(leaveSound) &&
@@ -29,10 +29,6 @@ const regleave = {
         console.log(`User ID: ${userID}`);
         console.log(`Leave sound: ${leaveSound}`);
       }
-    } else {
-      console.log('----------');
-      console.log('User is not admin');
-      message.author.send('This command is for admins only, blyat');
     }
   },
 };

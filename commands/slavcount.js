@@ -1,5 +1,3 @@
-const { ADMIN_ID } = require('../config.json');
-
 const slavcount = {
   name: 'slavcount',
   description: 'Posts total number of slavsounds in chat',

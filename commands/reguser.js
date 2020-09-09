@@ -1,14 +1,14 @@
 const soundManifest = require('../sound_manifest');
 const regUsers = require('../regular_users');
 const fs = require('fs').promises;
-const { ADMIN_ID } = require('../config.json');
+const { isAdmin } = require('../utils/isAdmin');
 
 const reguser = {
   name: 'reguser',
   description:
     'creates a regular user object from given discord ID and adds to regular_users.json',
   execute: function (message, args) {
-    if (message.author.id === ADMIN_ID) {
+    if (isAdmin(message)) {
       const user_id = args[0];
       // fetcher user object through guild to make sure user is on server command is given
       message.guild.members
@@ -40,10 +40,6 @@ const reguser = {
           console.log(`Error: ${err.message}`);
           console.log('----------');
         });
-    } else {
-      console.log('----------');
-      console.log('User is not admin');
-      message.author.send('This command is for admins only, blyat');
     }
   },
 };

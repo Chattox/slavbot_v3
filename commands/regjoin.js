@@ -1,7 +1,7 @@
 const soundManifest = require('../sound_manifest');
 const regUsers = require('../regular_users');
 const fs = require('fs').promises;
-const { ADMIN_ID } = require('../config.json');
+const { isAdmin } = require('../utils/isAdmin');
 
 const regjoin = {
   name: 'regjoin',
@@ -10,7 +10,7 @@ const regjoin = {
   execute: function (message, args) {
     const userID = args[0];
     const joinSound = args[1];
-    if (message.author.id === ADMIN_ID) {
+    if (isAdmin(message)) {
       if (
         joinSound === 'none' ||
         (soundManifest.regularSounds.includes(joinSound) &&
@@ -29,10 +29,6 @@ const regjoin = {
         console.log(`User ID: ${userID}`);
         console.log(`Join sound: ${joinSound}`);
       }
-    } else {
-      console.log('----------');
-      console.log('User is not admin');
-      message.author.send('This command is for admins only, blyat');
     }
   },
 };

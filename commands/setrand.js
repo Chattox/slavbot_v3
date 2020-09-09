@@ -1,12 +1,12 @@
 const soundManifest = require('../sound_manifest');
 const fs = require('fs').promises;
-const { ADMIN_ID } = require('../config.json');
+const { isAdmin } = require('../utils/isAdmin');
 
 const setrand = {
   name: 'setrand',
   description: 'toggles whether a sound is random only or not',
   execute: function (message, args) {
-    if (message.author.id === ADMIN_ID) {
+    if (isAdmin(message)) {
       if (soundManifest.regularSounds.includes(args[0])) {
         soundManifest.regularSounds = soundManifest.regularSounds.filter(
           (sound) => sound !== args[0]
@@ -41,10 +41,6 @@ const setrand = {
           `'${args[0]}' was not found in either regular or random only sound lists!`
         );
       }
-    } else {
-      console.log('----------');
-      console.log('User is not admin');
-      message.author.send('This command is for admins only, blyat');
     }
   },
 };

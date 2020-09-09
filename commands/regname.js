@@ -1,13 +1,12 @@
 const soundManifest = require('../sound_manifest');
 const regUsers = require('../regular_users');
 const fs = require('fs').promises;
-const { ADMIN_ID } = require('../config.json');
-
+const { isAdmin } = require('../utils');
 const regname = {
   name: 'regname',
   description: 'updates the name property of existing regular user object',
   execute: function (message, args) {
-    if (message.author.id === ADMIN_ID) {
+    if (isAdmin(message)) {
       if (regUsers[args[0]]) {
         const oldName = regUsers[args[0]].name;
         regUsers[args[0]].name = args[1];
@@ -25,10 +24,6 @@ const regname = {
         console.log('----------');
         console.log(`User at ID ${args[0]} is not a regular user`);
       }
-    } else {
-      console.log('----------');
-      console.log('User is not admin');
-      message.author.send('This command is for admins only, blyat');
     }
   },
 };

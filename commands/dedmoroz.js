@@ -1,20 +1,20 @@
-const { ADMIN_ID } = require('../config.json');
+const { isAdmin } = require('../utils/isAdmin');
 
 const dedmoroz = {
   name: 'dedmoroz',
   description:
     'runs a secret santa-like function using reactions to a given message, and DMs all participants with their giftee',
-  execute: function(message, args) {
-    if (message.author.id === ADMIN_ID) {
+  execute: function (message, args) {
+    if (isAdmin(message)) {
       // Participants (giftees) are passed via their user IDs as arguments
       const giftees = [];
       // Go through each ID argument and get the user obj associated with it. Add that to giftees array
-      args.forEach(userID => {
+      args.forEach((userID) => {
         const user = message.guild.members.cache.get(userID).user;
         giftees.push(user);
       });
       console.log('Giftees ---------V');
-      giftees.forEach(giftee => {
+      giftees.forEach((giftee) => {
         console.log(giftee.username);
       });
       // Shuffle giftees array.
@@ -33,16 +33,12 @@ const dedmoroz = {
               `3) Make sure to update your own Steam wishlist to make it easier for your gifter!\n` +
               `4) Don't tell anyone who your giftee is!`
           )
-          .catch(err => {
+          .catch((err) => {
             console.log(err);
           });
       });
-    } else {
-      console.log('----------');
-      console.log('User is not admin');
-      message.author.send('This command is for admins only, blyat');
     }
-  }
+  },
 };
 
 function shuffleArray(array) {
