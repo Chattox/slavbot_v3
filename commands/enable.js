@@ -6,7 +6,7 @@ const enable = {
   name: 'enable',
   description: 'enable a command to be used in slavbot',
   execute: function (message, args) {
-    if (isAdmin(message)) {
+    if (isAdmin(message, true)) {
       if (Object.keys(commandList).includes(args[0])) {
         commandList[args[0]] = true;
         const jsonCommandList = JSON.stringify(commandList);

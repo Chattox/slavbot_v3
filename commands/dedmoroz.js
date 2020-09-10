@@ -5,7 +5,7 @@ const dedmoroz = {
   description:
     'runs a secret santa-like function using reactions to a given message, and DMs all participants with their giftee',
   execute: function (message, args) {
-    if (isAdmin(message)) {
+    if (isAdmin(message, true)) {
       // Participants (giftees) are passed via their user IDs as arguments
       const giftees = [];
       // Go through each ID argument and get the user obj associated with it. Add that to giftees array

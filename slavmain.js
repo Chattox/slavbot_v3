@@ -2,7 +2,8 @@
 const Discord = require('discord.js');
 const fs = require('fs').promises;
 const client = new Discord.Client();
-const { prefix, TOKEN, ADMIN_ID, SMORD_ID } = require('./config.json');
+const { prefix, TOKEN, SMORD_ID } = require('./config.json');
+const { isAdmin } = require('./utils/isAdmin');
 const { playSound, randSound } = require('./slavsound');
 const soundManifest = require('./sound_manifest');
 const { isEqual } = require('./utils/isEqual');
@@ -69,13 +70,13 @@ client.on('message', async (message) => {
   const timeStamp = new Date();
   console.log(timeStamp.toLocaleDateString(), timeStamp.toLocaleTimeString());
   console.log(`User: ${message.author.username}`);
-  console.log(`Admin: ${message.author.id === ADMIN_ID}`);
+  console.log(`Admin: ${isAdmin(message, false)}`);
   console.log(`Command: ${command}`);
   console.log(`Args: ${args}`);
 
   // Create possible list of sound commands based on if user is admin
   let soundCommands = [...soundManifest.regularSounds];
-  if (message.author.id === ADMIN_ID) {
+  if (isAdmin(message, false)) {
     soundManifest.randSounds.forEach((sound) => {
       soundCommands.push(sound);
     });
@@ -87,7 +88,7 @@ client.on('message', async (message) => {
   // Check command against commandlist, if exists check if enabled, if enabled do the thing
   const commandList = require('./command_list.json');
   if (Object.keys(commandList).includes(command)) {
-    if (commandList[command] === true || message.author.id === ADMIN_ID) {
+    if (commandList[command] === true || isAdmin(message, false)) {
       let func = require(`./commands/${command}.js`);
       if (args.length > 0) {
         func.execute(message, args);

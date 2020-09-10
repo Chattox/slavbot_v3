@@ -5,7 +5,7 @@ const migrate = {
   name: 'migrate',
   description: 'moves all users from one channel to another',
   execute: function (message, args) {
-    if (isAdmin(message)) {
+    if (isAdmin(message, true)) {
       const originName = args[0].replace(/_/g, ' ');
       const destinationName = args[1].replace(/_/g, ' ');
       let origin = {};

@@ -6,7 +6,7 @@ const setrand = {
   name: 'setrand',
   description: 'toggles whether a sound is random only or not',
   execute: function (message, args) {
-    if (isAdmin(message)) {
+    if (isAdmin(message, true)) {
       if (soundManifest.regularSounds.includes(args[0])) {
         soundManifest.regularSounds = soundManifest.regularSounds.filter(
           (sound) => sound !== args[0]
