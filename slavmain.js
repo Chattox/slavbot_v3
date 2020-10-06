@@ -153,12 +153,8 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     const regUsers = require('./regular_users.json');
     if (newState.member.id in regUsers) {
       const regJoinSound = regUsers[newState.id].joinSound;
-      console.log(regJoinSound);
-      console.log(typeof regJoinSound);
-      console.log(regJoinSound.startsWith('rand'));
       if (regJoinSound.startsWith('rand')) {
         // This bit is to allow random join sounds from a specific rand list
-        console.log(regJoinSound);
         randSound([soundManifest[regJoinSound]], newState.channel);
       } else if (regJoinSound !== 'none') {
         playSound(regJoinSound, newState.channel);
