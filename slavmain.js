@@ -74,52 +74,63 @@ client.on('message', async (message) => {
   console.log(`Command: ${command}`);
   console.log(`Args: ${args}`);
 
-  // Create possible list of sound commands based on if user is admin
-  let soundCommands = [...soundManifest.regularSounds];
-  if (isAdmin(message, false)) {
-    soundManifest.randSounds.forEach((sound) => {
-      soundCommands.push(sound);
-    });
-    soundManifest.randcoin.forEach((sound) => {
-      soundCommands.push(sound);
-    });
-  }
+  // Check if slavbot is currently playing a sound, if so refuse command
+  if (
+    client.voice.connections.array().length === 0 ||
+    command === 'stop' ||
+    isAdmin(message, false)
+  ) {
+    // Create possible list of sound commands based on if user is admin
+    let soundCommands = [...soundManifest.regularSounds];
+    if (isAdmin(message, false)) {
+      soundManifest.randSounds.forEach((sound) => {
+        soundCommands.push(sound);
+      });
+      soundManifest.randcoin.forEach((sound) => {
+        soundCommands.push(sound);
+      });
+    }
 
-  // Check command against commandlist, if exists check if enabled, if enabled do the thing
-  const commandList = require('./command_list.json');
-  if (Object.keys(commandList).includes(command)) {
-    if (commandList[command] === true || isAdmin(message, false)) {
-      let func = require(`./commands/${command}.js`);
-      if (args.length > 0) {
-        func.execute(message, args);
+    // Check command against commandlist, if exists check if enabled, if enabled do the thing
+    const commandList = require('./command_list.json');
+    if (Object.keys(commandList).includes(command)) {
+      if (commandList[command] === true || isAdmin(message, false)) {
+        let func = require(`./commands/${command}.js`);
+        if (args.length > 0) {
+          func.execute(message, args);
+        } else {
+          func.execute(message, soundManifest);
+        }
       } else {
-        func.execute(message, soundManifest);
+        console.log('----------');
+        console.log('Command is disabled');
+        console.log(`Notifying ${message.author.username}`);
+        message.author.send('This command is disabled!');
       }
-    } else {
-      console.log('----------');
-      console.log('Command is disabled');
-      console.log(`Notifying ${message.author.username}`);
-      message.author.send('This command is disabled!');
     }
-  }
 
-  // Specific sound command
-  // Check if command is referencing a sound using array we made earlier
-  else if (soundCommands.includes(command)) {
-    if (message.member.voice.channel) {
-      playSound(command, message.member.voice.channel);
-    } else {
-      console.log('User was not in a voice channel');
+    // Specific sound command
+    // Check if command is referencing a sound using array we made earlier
+    else if (soundCommands.includes(command)) {
+      if (message.member.voice.channel) {
+        playSound(command, message.member.voice.channel);
+      } else {
+        console.log('User was not in a voice channel');
+      }
     }
-  }
 
-  // If command not recognised
-  else {
-    message.author.send(`"${command}" is not a recognised command, урод.`);
-    console.log('Command not recognised');
+    // If command not recognised
+    else {
+      message.author.send(`"${command}" is not a recognised command, урод.`);
+      console.log('Command not recognised');
+    }
+    //delete message when done
+    message.delete();
+  } else {
+    console.log('Sound already playing! Rejecting command.');
+    message.author.send('Wait your damn turn, урод');
+    message.delete();
   }
-  //delete message when done
-  message.delete();
 });
 
 // Voice state update (joining/leaving channels)
