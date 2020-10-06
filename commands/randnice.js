@@ -5,7 +5,7 @@ const randnice = {
   name: 'randnice',
   description: 'plays a random "nice" sound',
   execute: function (message) {
-    randSound([soundManifest.niceSounds], message.member.voice.channel);
+    randSound([soundManifest.randnice], message.member.voice.channel);
   },
 };
 
