@@ -80,7 +80,7 @@ client.on('message', async (message) => {
     soundManifest.randSounds.forEach((sound) => {
       soundCommands.push(sound);
     });
-    soundManifest.coinSounds.forEach((sound) => {
+    soundManifest.randcoin.forEach((sound) => {
       soundCommands.push(sound);
     });
   }
@@ -152,11 +152,12 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     }
     const regUsers = require('./regular_users.json');
     if (newState.member.id in regUsers) {
-      if (regUsers[newState.id].joinSound !== 'none') {
-        playSound(regUsers[newState.id].joinSound, newState.channel);
-      } else if (newState.id === SMORD_ID) {
-        // This bit is literally just because smord is special
-        randSound([soundManifest.smordHypeSounds], newState.channel);
+      const regJoinSound = regUsers[newState.id].joinSound;
+      if (regJoinSound.startsWith('rand')) {
+        // This bit is to allow random join sounds from a specific rand list
+        randSound([soundManifest[regJoinSound]], newState.channel);
+      } else if (regJoinSound !== 'none') {
+        playSound(regJoinSound, newState.channel);
       }
     }
   } else if (newStateChannel === null) {

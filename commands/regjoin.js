@@ -2,6 +2,7 @@ const soundManifest = require('../sound_manifest');
 const regUsers = require('../regular_users');
 const fs = require('fs').promises;
 const { isAdmin } = require('../utils/isAdmin');
+const { join } = require('path');
 
 const regjoin = {
   name: 'regjoin',
@@ -13,7 +14,8 @@ const regjoin = {
     if (isAdmin(message, true)) {
       if (
         joinSound === 'none' ||
-        (soundManifest.regularSounds.includes(joinSound) &&
+        ((soundManifest.regularSounds.includes(joinSound) ||
+          Object.keys(soundManifest).includes(joinSound)) &&
           Object.keys(regUsers).includes(userID))
       ) {
         regUsers[userID].joinSound = joinSound;
