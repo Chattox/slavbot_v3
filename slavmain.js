@@ -2,7 +2,7 @@
 const Discord = require('discord.js');
 const fs = require('fs').promises;
 const client = new Discord.Client();
-const { prefix, TOKEN, SMORD_ID } = require('./config.json');
+const { prefix, TOKEN, LOAN_ID, LOAN_TWITCH } = require('./config.json');
 const { isAdmin } = require('./utils/isAdmin');
 const { playSound, randSound } = require('./slavsound');
 const soundManifest = require('./sound_manifest');
@@ -186,6 +186,28 @@ client.on('voiceStateUpdate', (oldState, newState) => {
       }
     }
   }
+});
+
+// Play sound when Loan goes live and play in the first voice channel of the server
+client.on('presenceUpdate', (oldPresence, newPresence) => {
+  // Make sure the update is an actual change, is from Loan, and is Twitch
+  newPresence.activities.forEach((activity) => {
+    if (
+      !newPresence.equals(oldPresence) &&
+      activity.name === 'Twitch' &&
+      newPresence.user.id === LOAN_ID
+    ) {
+      const firstChannel = newPresence.guild.channels.cache
+        .filter((channel) => channel.type === 'voice')
+        .first();
+
+      console.log(
+        `${newPresence.user.username} has gone live on ${activity.name}`
+      );
+
+      playSound(LOAN_TWITCH, firstChannel);
+    }
+  });
 });
 
 client.login(TOKEN);
