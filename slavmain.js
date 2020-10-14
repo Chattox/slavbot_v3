@@ -190,24 +190,33 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 
 // Play sound when Loan goes live and play in the first voice channel of the server
 client.on('presenceUpdate', (oldPresence, newPresence) => {
-  // Make sure the update is an actual change, is from Loan, and is Twitch
-  newPresence.activities.forEach((activity) => {
-    if (
-      !newPresence.equals(oldPresence) &&
-      activity.name === 'Twitch' &&
-      newPresence.user.id === LOAN_ID
-    ) {
-      const firstChannel = newPresence.guild.channels.cache
-        .filter((channel) => channel.type === 'voice')
-        .first();
+  if (newPresence.user.id === LOAN_ID) {
+    console.log('----------');
+    console.log(`${newPresence.user.username} presence update`);
+    // Make sure the update is an actual change, is from Loan, and is Twitch, and that it's the first update containing twitch
+    let oldPresenceNotTwitch = true;
+    oldPresence.activities.forEach((activity) => {
+      if (activity.name === 'Twitch') {
+        console.log('Activity was already twitch, ignoring.');
+        oldPresenceNotTwitch = false;
+      }
+    });
+    if (oldPresenceNotTwitch) {
+      newPresence.activities.forEach((activity) => {
+        if (!newPresence.equals(oldPresence) && activity.name === 'Twitch') {
+          const firstChannel = newPresence.guild.channels.cache
+            .filter((channel) => channel.type === 'voice')
+            .first();
 
-      console.log(
-        `${newPresence.user.username} has gone live on ${activity.name}`
-      );
+          console.log(
+            `${newPresence.user.username} has gone live on ${activity.name}`
+          );
 
-      playSound(LOAN_TWITCH, firstChannel);
+          playSound(LOAN_TWITCH, firstChannel);
+        }
+      });
     }
-  });
+  }
 });
 
 client.login(TOKEN);
