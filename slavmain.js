@@ -191,13 +191,10 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 // Play sound when Loan goes live and play in the first voice channel of the server
 client.on('presenceUpdate', (oldPresence, newPresence) => {
   if (newPresence.user.id === LOAN_ID) {
-    console.log('----------');
-    console.log(`${newPresence.user.username} presence update`);
     // Make sure the update is an actual change, is from Loan, and is Twitch, and that it's the first update containing twitch
     let oldPresenceNotTwitch = true;
     oldPresence.activities.forEach((activity) => {
       if (activity.name === 'Twitch') {
-        console.log('Activity was already twitch, ignoring.');
         oldPresenceNotTwitch = false;
       }
     });
@@ -208,6 +205,7 @@ client.on('presenceUpdate', (oldPresence, newPresence) => {
             .filter((channel) => channel.type === 'voice')
             .first();
 
+          console.log(`----------`);
           console.log(
             `${newPresence.user.username} has gone live on ${activity.name}`
           );
