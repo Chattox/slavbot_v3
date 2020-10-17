@@ -6,7 +6,7 @@ const disable = {
   name: 'disable',
   description: 'disable a command to be used in slavbot',
   execute: function (message, args) {
-    if (isAdmin(message, true)) {
+    if (isAdmin(message.author.id, true)) {
       if (Object.keys(commandList).includes(args[0])) {
         console.log('hello world');
         commandList[args[0]] = false;

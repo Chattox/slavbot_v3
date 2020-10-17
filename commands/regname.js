@@ -6,7 +6,7 @@ const regname = {
   name: 'regname',
   description: 'updates the name property of existing regular user object',
   execute: function (message, args) {
-    if (isAdmin(message, true)) {
+    if (isAdmin(message.author.id, true)) {
       if (regUsers[args[0]]) {
         const oldName = regUsers[args[0]].name;
         regUsers[args[0]].name = args[1];
