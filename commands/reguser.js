@@ -8,7 +8,7 @@ const reguser = {
   description:
     'creates a regular user object from given discord ID and adds to regular_users.json',
   execute: function (message, args) {
-    if (isAdmin(message, true)) {
+    if (isAdmin(message.author.id, true)) {
       const user_id = args[0];
       // fetcher user object through guild to make sure user is on server command is given
       message.guild.members

@@ -5,7 +5,7 @@ const readuser = {
   description:
     'Console logs the activities of the user object of the given ID. If no ID given, logs the author',
   execute: function (message, args) {
-    if (isAdmin(message, true)) {
+    if (isAdmin(message.author.id, true)) {
       // check if args is an ID
       if (typeof args[0] === 'string') {
         console.log(

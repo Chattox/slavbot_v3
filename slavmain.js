@@ -7,6 +7,7 @@ const { isAdmin } = require('./utils/isAdmin');
 const { playSound, randSound } = require('./slavsound');
 const soundManifest = require('./sound_manifest');
 const { isEqual } = require('./utils/isEqual');
+const { isPlaying } = require('./utils/isPlaying');
 
 client.once('ready', () => {
   // Read all filenames of the commands dir to check for new commands
@@ -70,19 +71,19 @@ client.on('message', async (message) => {
   const timeStamp = new Date();
   console.log(timeStamp.toLocaleDateString(), timeStamp.toLocaleTimeString());
   console.log(`User: ${message.author.username}`);
-  console.log(`Admin: ${isAdmin(message, false)}`);
+  console.log(`Admin: ${isAdmin(message.author.id, false)}`);
   console.log(`Command: ${command}`);
   console.log(`Args: ${args}`);
 
   // Check if slavbot is currently playing a sound, if so refuse command
   if (
-    client.voice.connections.array().length === 0 ||
+    !isPlaying(client) ||
     command === 'stop' ||
-    isAdmin(message, false)
+    isAdmin(message.author.id, false)
   ) {
     // Create possible list of sound commands based on if user is admin
     let soundCommands = [...soundManifest.regularSounds];
-    if (isAdmin(message, false)) {
+    if (isAdmin(message.author.id, false)) {
       soundManifest.randSounds.forEach((sound) => {
         soundCommands.push(sound);
       });
@@ -94,7 +95,7 @@ client.on('message', async (message) => {
     // Check command against commandlist, if exists check if enabled, if enabled do the thing
     const commandList = require('./command_list.json');
     if (Object.keys(commandList).includes(command)) {
-      if (commandList[command] === true || isAdmin(message, false)) {
+      if (commandList[command] === true || isAdmin(message.author.id, false)) {
         let func = require(`./commands/${command}.js`);
         if (args.length > 0) {
           func.execute(message, args);
@@ -138,53 +139,70 @@ client.on('voiceStateUpdate', (oldState, newState) => {
   if (oldState.member.user.bot) {
     return;
   }
-  const oldStateChannel = oldState.channel;
-  const newStateChannel = newState.channel;
 
-  if (
-    (oldStateChannel === null ||
-      oldState.channelID === oldState.guild.afkChannelID) &&
-    newState.channelID !== newState.guild.afkChannelID
-  ) {
-    // For user joining voice, or coming from AFK channel
-    console.log('----------');
-    const timeStamp = new Date();
-    console.log(timeStamp.toLocaleDateString(), timeStamp.toLocaleTimeString());
-    if (newStateChannel === null) {
+  // Check if slavbot is already playing something to stop from interrupting
+  if (!isPlaying(client)) {
+    const oldStateChannel = oldState.channel;
+    const newStateChannel = newState.channel;
+
+    if (
+      (oldStateChannel === null ||
+        oldState.channelID === oldState.guild.afkChannelID) &&
+      newState.channelID !== newState.guild.afkChannelID
+    ) {
+      // For user joining voice, or coming from AFK channel
+      console.log('----------');
+      const timeStamp = new Date();
       console.log(
-        `${newState.member.user.username} has joined a channel but could not get channel information`
+        timeStamp.toLocaleDateString(),
+        timeStamp.toLocaleTimeString()
       );
-    } else {
+      if (newStateChannel === null) {
+        console.log(
+          `${newState.member.user.username} has joined a channel but could not get channel information`
+        );
+      } else {
+        console.log(
+          `${newState.member.user.username} has joined ${
+            newStateChannel.name || 'no name'
+          }`
+        );
+      }
+      const regUsers = require('./regular_users.json');
+      if (newState.member.id in regUsers) {
+        const regJoinSound = regUsers[newState.id].joinSound;
+        if (regJoinSound.startsWith('rand')) {
+          // This bit is to allow random join sounds from a specific rand list
+          randSound([soundManifest[regJoinSound]], newState.channel);
+        } else if (regJoinSound !== 'none') {
+          playSound(regJoinSound, newState.channel);
+        }
+      }
+    } else if (newStateChannel === null) {
+      // For user leaving voice
+      console.log('----------');
+      const timeStamp = new Date();
       console.log(
-        `${newState.member.user.username} has joined ${
-          newStateChannel.name || 'no name'
-        }`
+        timeStamp.toLocaleDateString(),
+        timeStamp.toLocaleTimeString()
       );
-    }
-    const regUsers = require('./regular_users.json');
-    if (newState.member.id in regUsers) {
-      const regJoinSound = regUsers[newState.id].joinSound;
-      if (regJoinSound.startsWith('rand')) {
-        // This bit is to allow random join sounds from a specific rand list
-        randSound([soundManifest[regJoinSound]], newState.channel);
-      } else if (regJoinSound !== 'none') {
-        playSound(regJoinSound, newState.channel);
+      console.log(
+        `${newState.member.user.username} has left ${oldStateChannel.name}`
+      );
+      const regUsers = require('./regular_users.json');
+      if (oldState.member.id in regUsers) {
+        if (regUsers[oldState.id].leaveSound !== 'none') {
+          playSound(regUsers[newState.id].leaveSound, oldState.channel);
+        }
       }
     }
-  } else if (newStateChannel === null) {
-    // For user leaving voice
+  } else {
     console.log('----------');
-    const timeStamp = new Date();
-    console.log(timeStamp.toLocaleDateString(), timeStamp.toLocaleTimeString());
     console.log(
-      `${newState.member.user.username} has left ${oldStateChannel.name}`
+      `${newState.member.user.username} ${
+        oldState.channel === null ? 'joined' : 'left'
+      } but slavbot was already playing something`
     );
-    const regUsers = require('./regular_users.json');
-    if (oldState.member.id in regUsers) {
-      if (regUsers[oldState.id].leaveSound !== 'none') {
-        playSound(regUsers[newState.id].leaveSound, oldState.channel);
-      }
-    }
   }
 });
 

@@ -1,7 +1,7 @@
 const { ADMIN_IDS } = require('../config.json');
 
-const isAdmin = (message, sendDm) => {
-  if (ADMIN_IDS.includes(message.author.id)) {
+const isAdmin = (id, sendDm) => {
+  if (ADMIN_IDS.includes(id)) {
     return true;
   } else {
     if (sendDm) {
