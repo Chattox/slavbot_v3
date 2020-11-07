@@ -1,31 +1,39 @@
 const { isAdmin } = require('../utils/isAdmin');
+const { shuffleArray } = require('../utils/shuffleArray');
 
 const dedmoroz = {
   name: 'dedmoroz',
   description:
-    'runs a secret santa-like function using reactions to a given message, and DMs all participants with their giftee',
-  execute: function (message, args) {
+    'runs a secret santa-like function using a secret santa role assigned to particiants, DMs all participants with their giftee',
+  execute: function (message) {
     if (isAdmin(message.author.id, true)) {
-      // Participants (giftees) are passed via their user IDs as arguments
-      const giftees = [];
-      // Go through each ID argument and get the user obj associated with it. Add that to giftees array
-      args.forEach((userID) => {
-        const user = message.guild.members.cache.get(userID).user;
-        giftees.push(user);
+      // Loop through every user in the guild the message was sent to
+      // Return a collection of all users with the secret santa role
+      const usersWithSantaRole = message.guild.members.cache.filter((user) => {
+        return user.roles.cache.find((role) => role.name === 'Secret Santa');
       });
-      console.log('Giftees ---------V');
-      giftees.forEach((giftee) => {
-        console.log(giftee.username);
-      });
-      // Shuffle giftees array.
-      shuffleArray(giftees);
-      // Go through each giftee user obj and DM them with their giftee and the rules
-      giftees.forEach((giftee, i) => {
-        giftee
+
+      // Make an array of the user objects of the santas
+      const santas = [];
+      usersWithSantaRole.each((santa) => santas.push(santa.user));
+
+      // Log some info
+      console.log('----- Secret Santas -----');
+      santas.forEach((santa) => console.log(santa.username));
+      console.log('----------');
+      console.log('Shuffling...');
+
+      // Shuffle santa array
+      shuffleArray(santas);
+
+      // Go through each santa user obj and DM them with their giftee and the rules
+      console.log('DMing santas...');
+      santas.forEach((santa, i) => {
+        santa
           .send(
             `Welcome to Secret Slavbot ${new Date().getFullYear()}!\n` +
               `Your giftee this year is **${
-                giftees[(i + 1) % giftees.length].username
+                santas[(i + 1) % santas.length].username
               }**!\n` +
               `The rules are:\n` +
               `1) Send your gift on the *second* day of the Steam Winter Sale. This allows people to look through the store for the perfect gift!\n` +
@@ -33,19 +41,16 @@ const dedmoroz = {
               `3) Make sure to update your own Steam wishlist to make it easier for your gifter!\n` +
               `4) Don't tell anyone who your giftee is!`
           )
-          .catch((err) => {
-            console.log(err);
-          });
+          .then((res) => {
+            console.log(`${i + 1} out of ${santas.length} DMs sent!`);
+            if (i + 1 >= santas.length) {
+              console.log('Done!');
+            }
+          })
+          .catch((err) => console.log(err));
       });
     }
   },
 };
-
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
 
 module.exports = dedmoroz;
