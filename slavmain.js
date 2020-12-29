@@ -211,26 +211,32 @@ client.on('presenceUpdate', (oldPresence, newPresence) => {
   if (newPresence.user.id === LOAN_ID) {
     // Make sure the update is an actual change, is from Loan, and is Twitch, and that it's the first update containing twitch
     let oldPresenceNotTwitch = true;
-    oldPresence.activities.forEach((activity) => {
-      if (activity.name === 'Twitch') {
-        oldPresenceNotTwitch = false;
-      }
-    });
-    if (oldPresenceNotTwitch) {
-      newPresence.activities.forEach((activity) => {
-        if (!newPresence.equals(oldPresence) && activity.name === 'Twitch') {
-          const firstChannel = newPresence.guild.channels.cache
-            .filter((channel) => channel.type === 'voice')
-            .first();
-
-          console.log(`----------`);
-          console.log(
-            `${newPresence.user.username} has gone live on ${activity.name}`
-          );
-
-          playSound(LOAN_TWITCH, firstChannel);
+    if (typeof oldPresence !== 'undefined') {
+      oldPresence.activities.forEach((activity) => {
+        if (activity.name === 'Twitch') {
+          oldPresenceNotTwitch = false;
         }
       });
+      if (oldPresenceNotTwitch) {
+        newPresence.activities.forEach((activity) => {
+          if (!newPresence.equals(oldPresence) && activity.name === 'Twitch') {
+            const firstChannel = newPresence.guild.channels.cache
+              .filter((channel) => channel.type === 'voice')
+              .first();
+
+            console.log(`----------`);
+            console.log(
+              `${newPresence.user.username} has gone live on ${activity.name}`
+            );
+
+            playSound(LOAN_TWITCH, firstChannel);
+          }
+        });
+      }
+    } else {
+      console.log('----------');
+      console.log('oldPresence was undefined');
+      console.log('----------');
     }
   }
 });
