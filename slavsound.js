@@ -30,7 +30,7 @@ const randSound = (soundLists, message) => {
   randSounds = randSounds.concat(...soundLists);
   // Pick a random sound from the array and play
   randChoice = randSounds[Math.floor(Math.random() * randSounds.length)];
-  playSound(randChoice, message);
+  playSound(randChoice, message).catch((err) => console.log(err));
 };
 
 module.exports = { playSound, randSound };
