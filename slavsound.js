@@ -14,7 +14,10 @@ const playSound = async (sound, channel) => {
     connection.disconnect();
   });
 
-  dispatcher.on('error', console.error);
+  dispatcher.on('error', (error) => {
+    console.error;
+    connection.disconnect();
+  });
   return dispatcher;
 };
 
