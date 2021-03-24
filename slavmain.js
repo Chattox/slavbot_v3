@@ -150,7 +150,8 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     if (
       (oldStateChannel === null ||
         oldState.channelID === oldState.guild.afkChannelID) &&
-      newState.channelID !== newState.guild.afkChannelID
+      newState.channelID !== newState.guild.afkChannelID &&
+      newStateChannel !== null
     ) {
       // For user joining voice, or coming from AFK channel
       console.log('----------');
