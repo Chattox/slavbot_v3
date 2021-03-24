@@ -114,7 +114,9 @@ client.on('message', async (message) => {
     // Check if command is referencing a sound using array we made earlier
     else if (soundCommands.includes(command)) {
       if (message.member.voice.channel) {
-        playSound(command, message.member.voice.channel);
+        playSound(command, message.member.voice.channel).catch((err) =>
+          console.log(err)
+        );
       } else {
         console.log('User was not in a voice channel');
       }
@@ -175,7 +177,9 @@ client.on('voiceStateUpdate', (oldState, newState) => {
           // This bit is to allow random join sounds from a specific rand list
           randSound([soundManifest[regJoinSound]], newState.channel);
         } else if (regJoinSound !== 'none') {
-          playSound(regJoinSound, newState.channel);
+          playSound(regJoinSound, newState.channel).catch((err) =>
+            console.log(err)
+          );
         }
       }
     } else if (newStateChannel === null) {
@@ -192,7 +196,10 @@ client.on('voiceStateUpdate', (oldState, newState) => {
       const regUsers = require('./regular_users.json');
       if (oldState.member.id in regUsers) {
         if (regUsers[oldState.id].leaveSound !== 'none') {
-          playSound(regUsers[newState.id].leaveSound, oldState.channel);
+          playSound(
+            regUsers[newState.id].leaveSound,
+            oldState.channel
+          ).catch((err) => console.log(err));
         }
       }
     }
@@ -229,7 +236,9 @@ client.on('presenceUpdate', (oldPresence, newPresence) => {
               `${newPresence.user.username} has gone live on ${activity.name}`
             );
 
-            playSound(LOAN_TWITCH, firstChannel);
+            playSound(LOAN_TWITCH, firstChannel).catch((err) =>
+              console.log(err)
+            );
           }
         });
       }
