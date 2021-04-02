@@ -1,4 +1,5 @@
 const { isAdmin } = require('../utils/isAdmin');
+const { formatWeatherArgs } = require('../utils/formatWeatherArgs');
 const axios = require('axios').default;
 const { WEATHER_KEY } = require('../config.json');
 
@@ -12,7 +13,7 @@ const weather = {
         method: 'GET',
         url: 'http://api.openweathermap.org/data/2.5/weather',
         params: {
-          q: 'fkhskfn',
+          q: formatWeatherArgs(args),
           appid: WEATHER_KEY,
           units: 'metric',
         },
