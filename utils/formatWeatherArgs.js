@@ -1,14 +1,18 @@
 // Format arguments passed to the weather command into a single string accepted by OpenWeatherMap API.
 // Format is <city name>,<country code>
 
+const weather = require('../commands/weather');
+
 const formatWeatherArgs = (weatherArgs) => {
-  // console.log(weatherArgs);
-  // const regex = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
-  // weatherArgs.forEach((word) => {
-  //   word.replace(regex, '');
-  // });
-  const result = weatherArgs.join(',');
-  // console.log(result);
+  if (!weatherArgs) {
+    return false;
+  }
+  const regex = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~0-9]/g;
+  const words = [];
+  weatherArgs.forEach((word) => {
+    words.push(word.replace(regex, ''));
+  });
+  const result = words.join(',');
   return result;
 };
 
