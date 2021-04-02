@@ -12,7 +12,7 @@ const weather = {
         method: 'GET',
         url: 'http://api.openweathermap.org/data/2.5/weather',
         params: {
-          q: 'Southport,uk',
+          q: 'fkhskfn',
           appid: WEATHER_KEY,
           units: 'metric',
         },
@@ -29,8 +29,12 @@ const weather = {
           );
         })
         .catch((err) => {
-          console.log(err);
-          message.channel.send('There is no weather!');
+          console.log(
+            `Weather command error ${err.response.status}: ${err.response.statusText}`
+          );
+          if (err.response.status === 404) {
+            message.channel.send(`${args[0]} isn't even a real place, blyat!`);
+          }
         });
     }
   },
