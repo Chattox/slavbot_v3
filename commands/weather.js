@@ -25,7 +25,7 @@ const weather = {
           const { name } = res.data;
           const { description } = res.data.weather[0];
           const { temp, feels_like } = res.data.main;
-          console.log(
+          message.channel.send(
             `The weather in ${name} is currently \"${description}\"! The temperature is ${temp}°C but feels like ${feels_like}°C.`
           );
         })
