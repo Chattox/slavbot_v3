@@ -1,11 +1,12 @@
 const { isAdmin } = require('../utils/isAdmin');
+const soundManifest = require('../sound_manifest.json');
 
 const read = {
   name: 'read',
   description: 'Console logs the soundManifest object',
-  execute: function (message, args) {
+  execute: function (message) {
     if (isAdmin(message.author.id, true)) {
-      console.log(args);
+      console.log(soundManifest);
     }
   },
 };
