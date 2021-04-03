@@ -100,7 +100,7 @@ client.on('message', async (message) => {
         if (args.length > 0) {
           func.execute(message, args);
         } else {
-          func.execute(message, soundManifest);
+          func.execute(message);
         }
       } else {
         console.log('----------');

@@ -7,7 +7,7 @@ const readuser = {
   execute: function (message, args) {
     if (isAdmin(message.author.id, true)) {
       // check if args is an ID
-      if (typeof args[0] === 'string') {
+      if (args && typeof args[0] === 'string') {
         console.log(
           message.guild.members.cache.get(args.toString()).presence.activities
         );
