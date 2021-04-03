@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha spec/*.spec.js",
     "dev": "nodemon slavmain.js"
   },
   "repository": {
@@ -20,10 +20,13 @@
   "homepage": "https://github.com/Chattox/slavbot_v3#readme",
   "dependencies": {
     "@discordjs/opus": "^0.4.0",
+    "axios": "^0.21.1",
     "discord.js": "^12.5.1",
     "ffmpeg-static": "^4.2.7"
   },
   "devDependencies": {
+    "chai": "^4.3.4",
+    "mocha": "^8.3.2",
     "nodemon": "^2.0.6"
   }
 }
