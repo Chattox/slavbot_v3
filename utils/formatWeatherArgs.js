@@ -1,8 +1,6 @@
 // Format arguments passed to the weather command into a single string accepted by OpenWeatherMap API.
 // Format is <city name>,<country code>
 
-const weather = require('../commands/weather');
-
 const formatWeatherArgs = (weatherArgs) => {
   if (!weatherArgs) {
     return false;
