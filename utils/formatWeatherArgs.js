@@ -5,7 +5,7 @@ const formatWeatherArgs = (weatherArgs) => {
   if (!weatherArgs) {
     return false;
   }
-  const regex = /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~0-9]/g;
+  const regex = /[!"#£$%&'()*+,-./:;<=>?@[\]^_`{|}~0-9]/g;
   const words = [];
   weatherArgs.forEach((word) => {
     words.push(word.replace(regex, ''));
