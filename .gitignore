@@ -7,3 +7,4 @@ regular_users.json
 command_list.json
 commands/randdog.js
 commands/randcat.js
+steam_cache.json
