@@ -38,7 +38,7 @@ const steamrating = {
 
       axios.request(axiosOptions).then((res) => {
         const summary = res.data.query_summary;
-        const percentPostive = Math.round(
+        const percentPostive = Math.floor(
           (summary.total_positive / summary.total_reviews) * 100
         );
         message.channel.send(
