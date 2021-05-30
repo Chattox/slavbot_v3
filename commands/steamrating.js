@@ -48,6 +48,9 @@ const steamrating = {
               `Reviews: **${summary.review_score_desc}** with ${percentPostive}% positive out of ${summary.total_reviews} reviews\n\n` +
               "NOTE: The number of total reviews will differ slightly than what Steam's store page says. This is because Steam is dumb and definitely nothing to do with anything I did."
           );
+          console.log(
+            `Steam rating found (${percentPostive}% positive) and posted to chat!`
+          );
         });
       } else {
         console.log('No arguments given!');
