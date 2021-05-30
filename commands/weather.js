@@ -1,4 +1,3 @@
-const { isAdmin } = require('../utils/isAdmin');
 const { formatWeatherArgs } = require('../utils/formatWeatherArgs');
 const axios = require('axios').default;
 const { WEATHER_KEY } = require('../config.json');
