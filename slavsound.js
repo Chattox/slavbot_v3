@@ -4,21 +4,33 @@ const { client } = require('./slavmain.js');
 sound to find specific soundfile and message obj
  to join correct voice channel */
 const playSound = async (sound, channel) => {
-  const connection = await channel.join();
-  const dispatcher = connection.play(`./sounds/${sound}.mp3`);
-  dispatcher.on('start', () => {
-    console.log(`Playing "${sound}" in ${channel.name}...`);
-  });
-  dispatcher.on('finish', () => {
-    console.log('Finished playing');
-    connection.disconnect();
-  });
+  try {
+    const connection = await channel.join(); // TODO: remove error handling for this func from slavmain.
+    const dispatcher = connection.play(`./sounds/${sound}.mp3`); // Have it all here instead.
+    dispatcher.on('start', () => {
+      console.log(`Playing "${sound}" in ${channel.name}...`);
+    });
+    dispatcher.on('finish', () => {
+      console.log('Finished playing');
+      connection.disconnect();
+    });
 
-  dispatcher.on('error', (error) => {
-    console.error;
-    connection.disconnect();
-  });
-  return dispatcher;
+    dispatcher.on('error', (error) => {
+      //console.error;
+      connection.disconnect();
+    });
+    return dispatcher;
+  } catch (err) {
+    if (
+      err.message == 'You do not have permission to join this voice channel.'
+    ) {
+      console.log(
+        `Could not join channel: ${channel.name} - do not have permission to join`
+      );
+    } else {
+      console.log(err);
+    }
+  }
 };
 
 // For users joining/leaving channels, same as playSound but takes voiceStateUpdate obj instead of message
@@ -33,7 +45,7 @@ const randSound = (soundLists, message) => {
   randSounds = randSounds.concat(...soundLists);
   // Pick a random sound from the array and play
   randChoice = randSounds[Math.floor(Math.random() * randSounds.length)];
-  playSound(randChoice, message).catch((err) => console.log(err));
+  playSound(randChoice, message);
 };
 
 module.exports = { playSound, randSound };

@@ -178,9 +178,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
           // This bit is to allow random join sounds from a specific rand list
           randSound([soundManifest[regJoinSound]], newState.channel);
         } else if (regJoinSound !== 'none') {
-          playSound(regJoinSound, newState.channel).catch((err) =>
-            console.log(err)
-          );
+          playSound(regJoinSound, newState.channel);
         }
       }
     } else if (newStateChannel === null) {
@@ -197,10 +195,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
       const regUsers = require('./regular_users.json');
       if (oldState.member.id in regUsers) {
         if (regUsers[oldState.id].leaveSound !== 'none') {
-          playSound(
-            regUsers[newState.id].leaveSound,
-            oldState.channel
-          ).catch((err) => console.log(err));
+          playSound(regUsers[newState.id].leaveSound, oldState.channel);
         }
       }
     }
@@ -237,9 +232,7 @@ client.on('presenceUpdate', (oldPresence, newPresence) => {
               `${newPresence.user.username} has gone live on ${activity.name}`
             );
 
-            playSound(LOAN_TWITCH, firstChannel).catch((err) =>
-              console.log(err)
-            );
+            playSound(LOAN_TWITCH, firstChannel);
           }
         });
       }
