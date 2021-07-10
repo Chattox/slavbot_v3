@@ -2,7 +2,13 @@
 const { Client } = require('discord.js');
 const fs = require('fs').promises;
 const client = new Client();
-const { prefix, TOKEN, LOAN_ID, LOAN_TWITCH } = require('./config.json');
+const {
+  SND_PREFIX,
+  CMD_PREFIX,
+  TOKEN,
+  LOAN_ID,
+  LOAN_TWITCH,
+} = require('./config.json');
 const { isAdmin } = require('./utils/isAdmin');
 const { playSound, randSound } = require('./slavsound');
 const soundManifest = require('./sound_manifest');
@@ -58,9 +64,16 @@ client.once('ready', () => {
 // When get message, do thing
 client.on('message', async (message) => {
   // If message author is bot or no prefix, don't do thing
-  if (!message.content.startsWith(prefix) || message.author.bot) {
+  if (
+    (!message.content.startsWith(SND_PREFIX) &&
+      !message.content.startsWith(CMD_PREFIX)) ||
+    message.author.bot
+  ) {
     return;
   }
+
+  // Decide if sound or other command
+  const isCommand = message.content.startsWith(CMD_PREFIX);
 
   // Strip prefix separate command from args
   const args = message.content.substring(1).toLowerCase().split(' ');
@@ -94,7 +107,10 @@ client.on('message', async (message) => {
 
     // Check command against commandlist, if exists check if enabled, if enabled do the thing
     const commandList = require('./command_list.json');
-    if (Object.keys(commandList).includes(command)) {
+    if (
+      isCommand ||
+      (command.includes('rand') && Object.keys(commandList).includes(command))
+    ) {
       if (commandList[command] === true || isAdmin(message.author.id, false)) {
         let func = require(`./commands/${command}.js`);
         if (args.length > 0) {
@@ -104,9 +120,9 @@ client.on('message', async (message) => {
         }
       } else {
         console.log('----------');
-        console.log('Command is disabled');
+        console.log('Command disabled or not found');
         console.log(`Notifying ${message.author.username}`);
-        message.author.send('This command is disabled!');
+        message.author.send("This command is disabled or doesn't exist!");
       }
     }
 
