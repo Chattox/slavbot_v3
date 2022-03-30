@@ -18,7 +18,7 @@ const playSound = async (sound, channel) => {
   });
 
   try {
-    await entersState(connection, VoiceConnectionStatus.Ready, 15e3);
+    await entersState(connection, VoiceConnectionStatus.Ready, 5e3);
     connection.subscribe(player);
     console.log(`Playing "${sound}" in ${channel.name}...`);
     player.play(resource);
@@ -28,7 +28,9 @@ const playSound = async (sound, channel) => {
     });
   } catch (error) {
     connection.destroy();
-    throw error;
+    console.log(
+      `Timed out trying to connect to ${channel.name}, this could be due to not having permission to join or because of networking issues`
+    );
   }
 };
 
