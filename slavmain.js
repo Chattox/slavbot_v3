@@ -1,14 +1,15 @@
 // It's slav time
-const { Client } = require('discord.js');
-const fs = require('fs').promises;
-const client = new Client();
 const {
   SND_PREFIX,
   CMD_PREFIX,
   TOKEN,
   LOAN_ID,
   LOAN_TWITCH,
+  INTENTS,
 } = require('./config.json');
+const { Client } = require('discord.js');
+const fs = require('fs').promises;
+const client = new Client({ intents: INTENTS });
 const { isAdmin } = require('./utils/isAdmin');
 const { playSound, randSound } = require('./slavsound');
 const soundManifest = require('./sound_manifest');
