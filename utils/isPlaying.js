@@ -1,5 +1,5 @@
 const isPlaying = (client) => {
-  if (client.voice.connections.array().length > 0) {
+  if (client.voice.adapters.length > 0) {
     return true;
   } else {
     return false;
