@@ -1,6 +1,7 @@
 const { MessageReaction } = require('discord.js');
 const { playSound } = require('../slavsound');
 const { isAdmin } = require('../utils/isAdmin');
+const { getVoiceConnection } = require('@discordjs/voice');
 
 const bonk = {
   name: 'bonk',
@@ -38,17 +39,13 @@ const bonk = {
 
       console.log('----------');
       console.log(`Bonking ${user.displayName} to ${destination.name}...`);
-      playSound('bonk', user.voice.channel)
-        .then((dispatcher) => {
-          dispatcher.on('finish', () => {
-            setTimeout(() => {
-              user.voice.setChannel(destination);
-            }, 100);
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      playSound('bonk', user.voice.channel);
+      const player = getVoiceConnection(message.guildId);
+      player.on('destroyed', () => {
+        setTimeout(() => {
+          user.voice.setChannel(destination);
+        }, 100);
+      });
     }
   },
 };
