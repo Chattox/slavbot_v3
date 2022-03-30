@@ -1,43 +1,39 @@
-const { client } = require('./slavmain.js');
+const {
+  joinVoiceChannel,
+  createAudioPlayer,
+  createAudioResource,
+  entersState,
+  StreamType,
+  AudioPlayerStatus,
+  VoiceConnectionStatus,
+} = require('@discordjs/voice');
 
-/* Plays a specific sound. Takes 2 args,
-sound to find specific soundfile and message obj
- to join correct voice channel */
 const playSound = async (sound, channel) => {
-  try {
-    const connection = await channel.join(); // TODO: remove error handling for this func from slavmain.
-    const dispatcher = connection.play(`./sounds/${sound}.mp3`); // Have it all here instead.
-    dispatcher.on('start', () => {
-      console.log(`Playing "${sound}" in ${channel.name}...`);
-    });
-    dispatcher.on('finish', () => {
-      console.log('Finished playing');
-      connection.disconnect();
-    });
+  const player = createAudioPlayer();
+  const resource = createAudioResource(`./sounds/${sound}.mp3`);
+  const connection = joinVoiceChannel({
+    channelId: channel.id,
+    guildId: channel.guildId,
+    adapterCreator: channel.guild.voiceAdapterCreator,
+  });
 
-    dispatcher.on('error', (error) => {
-      //console.error;
-      connection.disconnect();
+  try {
+    await entersState(connection, VoiceConnectionStatus.Ready, 5e3);
+    connection.subscribe(player);
+    console.log(`Playing "${sound}" in ${channel.name}...`);
+    player.play(resource);
+    player.on('idle', () => {
+      console.log('Finished playing');
+      connection.destroy();
     });
-    return dispatcher;
-  } catch (err) {
-    if (
-      err.message == 'You do not have permission to join this voice channel.'
-    ) {
-      console.log(
-        `Could not join channel: ${channel.name} - do not have permission to join`
-      );
-    } else {
-      console.log(err);
-    }
+  } catch (error) {
+    connection.destroy();
+    console.log(
+      `Timed out trying to connect to ${channel.name}, this could be due to not having permission to join or because of networking issues`
+    );
   }
 };
 
-// For users joining/leaving channels, same as playSound but takes voiceStateUpdate obj instead of message
-
-/* Random sounds. Takes 2 args, array of sound lists 
-from sound_manifest.json to pick a sound from, 
-and msg obj to join correct voice channel */
 const randSound = (soundLists, message) => {
   // Create new array that will contain all possible random sounds
   let randSounds = [];

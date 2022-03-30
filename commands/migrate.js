@@ -1,3 +1,5 @@
+const { getVoiceConnection } = require('@discordjs/voice');
+const { User } = require('discord.js');
 const { playSound } = require('../slavsound');
 const { isAdmin } = require('../utils/isAdmin');
 
@@ -24,21 +26,17 @@ const migrate = {
         console.log(
           `Moving all users from ${origin.name} to ${destination.name}...`
         );
-        playSound('leeroy', origin)
-          .then((dispatcher) => {
-            dispatcher.on('finish', () => {
-              setTimeout(() => {
-                origin.members.forEach((member) => {
-                  if (!member.bot) {
-                    member.voice.setChannel(destination);
-                  }
-                });
-              }, 500);
+        playSound('leeroy', origin);
+        const player = getVoiceConnection(message.guildId);
+        player.on('destroyed', () => {
+          setTimeout(() => {
+            origin.members.forEach((member) => {
+              if (!member.user.bot) {
+                member.voice.setChannel(destination);
+              }
             });
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+          }, 100);
+        });
       } else {
         console.log('----------');
         console.log('Incorrect arguments! Needs origin and target channels');

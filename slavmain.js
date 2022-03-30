@@ -1,14 +1,15 @@
 // It's slav time
-const { Client } = require('discord.js');
-const fs = require('fs').promises;
-const client = new Client();
 const {
   SND_PREFIX,
   CMD_PREFIX,
   TOKEN,
   LOAN_ID,
   LOAN_TWITCH,
+  INTENTS,
 } = require('./config.json');
+const { Client } = require('discord.js');
+const fs = require('fs').promises;
+const client = new Client({ intents: INTENTS });
 const { isAdmin } = require('./utils/isAdmin');
 const { playSound, randSound } = require('./slavsound');
 const soundManifest = require('./sound_manifest');
@@ -62,7 +63,7 @@ client.once('ready', () => {
 });
 
 // When get message, do thing
-client.on('message', async (message) => {
+client.on('messageCreate', async (message) => {
   // If message author is bot or no prefix, don't do thing
   if (
     (!message.content.startsWith(SND_PREFIX) &&
@@ -165,8 +166,8 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 
     if (
       (oldStateChannel === null ||
-        oldState.channelID === oldState.guild.afkChannelID) &&
-      newState.channelID !== newState.guild.afkChannelID &&
+        oldState.channelId === oldState.guild.afkChannelId) &&
+      newState.channelId !== newState.guild.afkChannelId &&
       newStateChannel !== null
     ) {
       // For user joining voice, or coming from AFK channel
