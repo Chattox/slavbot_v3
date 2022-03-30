@@ -19,11 +19,11 @@
   },
   "homepage": "https://github.com/Chattox/slavbot_v3#readme",
   "dependencies": {
-    "@discordjs/opus": "^0.4.0",
-    "axios": "^0.21.1",
-    "discord.js": "^12.5.1",
-    "ffmpeg-static": "^4.2.7",
-    "fuse.js": "^6.4.6"
+    "@discordjs/opus": "0.4.0",
+    "axios": "0.21.1",
+    "discord.js": "12.5.1",
+    "ffmpeg-static": "4.2.7",
+    "fuse.js": "6.4.6"
   },
   "devDependencies": {
     "chai": "^4.3.4",
