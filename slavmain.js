@@ -63,7 +63,7 @@ client.once('ready', () => {
 });
 
 // When get message, do thing
-client.on('message', async (message) => {
+client.on('messageCreate', async (message) => {
   // If message author is bot or no prefix, don't do thing
   if (
     (!message.content.startsWith(SND_PREFIX) &&
