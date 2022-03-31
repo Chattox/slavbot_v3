@@ -36,11 +36,11 @@ const playSound = async (sound, channel) => {
 
 const randSound = (soundLists, message) => {
   // Create new array that will contain all possible random sounds
-  let randSounds = [];
+  let randsounds = [];
   // Populate array with combination of regular and random only sound lists from sound_manifest.json
-  randSounds = randSounds.concat(...soundLists);
+  randsounds = randsounds.concat(...soundLists);
   // Pick a random sound from the array and play
-  randChoice = randSounds[Math.floor(Math.random() * randSounds.length)];
+  randChoice = randsounds[Math.floor(Math.random() * randsounds.length)];
   playSound(randChoice, message);
 };
 

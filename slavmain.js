@@ -98,7 +98,7 @@ client.on('messageCreate', async (message) => {
     // Create possible list of sound commands based on if user is admin
     let soundCommands = [...soundManifest.regularSounds];
     if (isAdmin(message.author.id, false)) {
-      soundManifest.randSounds.forEach((sound) => {
+      soundManifest.randsounds.forEach((sound) => {
         soundCommands.push(sound);
       });
       soundManifest.randcoin.forEach((sound) => {
