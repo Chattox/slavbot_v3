@@ -241,7 +241,7 @@ client.on('presenceUpdate', (oldPresence, newPresence) => {
         newPresence.activities.forEach((activity) => {
           if (!newPresence.equals(oldPresence) && activity.name === 'Twitch') {
             const firstChannel = newPresence.guild.channels.cache
-              .filter((channel) => channel.type === 'voice')
+              .filter((channel) => channel.isVoice())
               .first();
 
             console.log(`----------`);
@@ -267,6 +267,5 @@ module.exports = { client };
 
 /*
   TO-DO:
-  - Add ability to add sounds to specific randlists via chat command
   - Fix !create overwriting edited random lists with lists loaded at startup
 */
