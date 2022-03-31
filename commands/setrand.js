@@ -12,7 +12,7 @@ const setrand = {
           soundManifest.regularSounds = soundManifest.regularSounds.filter(
             (sound) => sound !== args[0]
           );
-          soundManifest.randSounds.push(args[0]);
+          soundManifest.randsounds.push(args[0]);
           const jsonSoundManifest = JSON.stringify(soundManifest);
           fs.writeFile('./sound_manifest.json', jsonSoundManifest, 'utf8')
             .then((res) => {
@@ -21,8 +21,8 @@ const setrand = {
             .catch((err) => {
               console.log(err);
             });
-        } else if (soundManifest.randSounds.includes(args[0])) {
-          soundManifest.randSounds = soundManifest.randSounds.filter(
+        } else if (soundManifest.randsounds.includes(args[0])) {
+          soundManifest.randsounds = soundManifest.randsounds.filter(
             (sound) => sound !== args[0]
           );
           soundManifest.regularSounds.push(args[0]);
