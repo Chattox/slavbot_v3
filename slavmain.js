@@ -13,6 +13,7 @@ const client = new Client({ intents: INTENTS });
 const { isAdmin } = require('./utils/isAdmin');
 const { playSound, randSound } = require('./slavsound');
 const soundManifest = require('./sound_manifest');
+const regUsers = require('./regular_users.json');
 const { isEqual } = require('./utils/isEqual');
 const { isPlaying } = require('./utils/isPlaying');
 
@@ -226,37 +227,51 @@ client.on('voiceStateUpdate', (oldState, newState) => {
   }
 });
 
-// Play sound when Loan goes live and play in the first voice channel of the server
+// Detect someone going live on Twitch and play alert sound if they have one set
+
+// TODO: add handling for users not on reguser list
+
 client.on('presenceUpdate', (oldPresence, newPresence) => {
-  if (newPresence.user.id === LOAN_ID) {
-    // Make sure the update is an actual change, is from Loan, and is Twitch, and that it's the first update containing twitch
+  console.log(regUsers[newPresence.user.id.toString()]);
+  newPresence.activities.forEach((activity) => {
+    console.log(activity.type);
+  });
+
+  if (regUsers[newPresence.user.id.toString()].twitchSound != 'none') {
+    console.log('yeet');
+    // Make sure the update is an actual change, is Twitch, and that it's the first update containing twitch
     let oldPresenceNotTwitch = true;
-    if (typeof oldPresence !== 'undefined') {
+    if (typeof oldPresence !== undefined) {
       oldPresence.activities.forEach((activity) => {
-        if (activity.name === 'Twitch') {
+        if (activity.type === 'STREAMING') {
           oldPresenceNotTwitch = false;
         }
       });
       if (oldPresenceNotTwitch) {
         newPresence.activities.forEach((activity) => {
-          if (!newPresence.equals(oldPresence) && activity.name === 'Twitch') {
+          if (
+            !newPresence.equals(oldPresence) &&
+            activity.type === 'STREAMING'
+          ) {
             const firstChannel = newPresence.guild.channels.cache
               .filter((channel) => channel.isVoice())
               .first();
 
-            console.log(`----------`);
+            console.log('----------');
             console.log(
               `${newPresence.user.username} has gone live on ${activity.name}`
             );
 
-            playSound(LOAN_TWITCH, firstChannel);
+            playSound(
+              regUsers[newPresence.user.id.toString()].twitchSound,
+              firstChannel
+            );
           }
         });
       }
     } else {
       console.log('----------');
       console.log('oldPresence was undefined');
-      console.log('----------');
     }
   }
 });
