@@ -228,51 +228,46 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 });
 
 // Detect someone going live on Twitch and play alert sound if they have one set
-
-// TODO: add handling for users not on reguser list
-
 client.on('presenceUpdate', (oldPresence, newPresence) => {
-  console.log(regUsers[newPresence.user.id.toString()]);
-  newPresence.activities.forEach((activity) => {
-    console.log(activity.type);
-  });
-
-  if (regUsers[newPresence.user.id.toString()].twitchSound != 'none') {
-    console.log('yeet');
-    // Make sure the update is an actual change, is Twitch, and that it's the first update containing twitch
-    let oldPresenceNotTwitch = true;
-    if (typeof oldPresence !== undefined) {
-      oldPresence.activities.forEach((activity) => {
-        if (activity.type === 'STREAMING') {
-          oldPresenceNotTwitch = false;
-        }
-      });
-      if (oldPresenceNotTwitch) {
-        newPresence.activities.forEach((activity) => {
-          if (
-            !newPresence.equals(oldPresence) &&
-            activity.type === 'STREAMING'
-          ) {
-            const firstChannel = newPresence.guild.channels.cache
-              .filter((channel) => channel.isVoice())
-              .first();
-
-            console.log('----------');
-            console.log(
-              `${newPresence.user.username} has gone live on ${activity.name}`
-            );
-
-            playSound(
-              regUsers[newPresence.user.id.toString()].twitchSound,
-              firstChannel
-            );
+  if (Object.keys(regUsers).includes(newPresence.user.id.toString())) {
+    if (regUsers[newPresence.user.id.toString()].twitchSound != 'none') {
+      // Make sure the update is an actual change, is Twitch, and that it's the first update containing twitch
+      let oldPresenceNotTwitch = true;
+      if (typeof oldPresence !== undefined) {
+        oldPresence.activities.forEach((activity) => {
+          if (activity.type === 'STREAMING') {
+            oldPresenceNotTwitch = false;
           }
         });
+        if (oldPresenceNotTwitch) {
+          newPresence.activities.forEach((activity) => {
+            if (
+              !newPresence.equals(oldPresence) &&
+              activity.type === 'STREAMING'
+            ) {
+              const firstChannel = newPresence.guild.channels.cache
+                .filter((channel) => channel.isVoice())
+                .first();
+
+              console.log('----------');
+              console.log(
+                `${newPresence.user.username} has gone live on ${activity.name}`
+              );
+
+              playSound(
+                regUsers[newPresence.user.id.toString()].twitchSound,
+                firstChannel
+              );
+            }
+          });
+        }
+      } else {
+        console.log('----------');
+        console.log('oldPresence was undefined');
       }
-    } else {
-      console.log('----------');
-      console.log('oldPresence was undefined');
     }
+  } else {
+    console.log(`${newPresence.user.username} is not a regular user`);
   }
 });
 
