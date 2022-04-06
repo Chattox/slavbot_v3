@@ -22,6 +22,7 @@ const reguser = {
                 name: user.username,
                 joinSound: 'none',
                 leaveSound: 'none',
+                twitchSound: 'none',
               };
               const formattedRegUsers = JSON.stringify(regUsers);
               fs.writeFile('./regular_users.json', formattedRegUsers, 'utf8')
