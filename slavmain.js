@@ -1,12 +1,5 @@
 // It's slav time
-const {
-  SND_PREFIX,
-  CMD_PREFIX,
-  TOKEN,
-  LOAN_ID,
-  LOAN_TWITCH,
-  INTENTS,
-} = require('./config.json');
+const { SND_PREFIX, CMD_PREFIX, TOKEN, INTENTS } = require('./config.json');
 const { Client } = require('discord.js');
 const fs = require('fs').promises;
 const client = new Client({ intents: INTENTS });
