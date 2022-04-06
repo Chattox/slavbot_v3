@@ -259,8 +259,6 @@ client.on('presenceUpdate', (oldPresence, newPresence) => {
         console.log('oldPresence was undefined');
       }
     }
-  } else {
-    console.log(`${newPresence.user.username} is not a regular user`);
   }
 });
 
