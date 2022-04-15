@@ -113,11 +113,17 @@ client.on('messageCreate', async (message) => {
         } else {
           func.execute(message);
         }
+      } else if (
+        Object.keys(commandList).includes(command) &&
+        !commandList[command]
+      ) {
+        console.log('----------');
+        console.log('Command disabled');
+        message.author.send(`"${command}" is disabled!`);
       } else {
         console.log('----------');
-        console.log('Command disabled or not found');
-        console.log(`Notifying ${message.author.username}`);
-        message.author.send("This command is disabled or doesn't exist!");
+        console.log('Command not found');
+        message.author.send(`"${command}" is not a valid command!`);
       }
     }
 
