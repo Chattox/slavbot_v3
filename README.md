@@ -40,7 +40,7 @@ The config file needs the following variables:
 "TOKEN": "your discord bot token",
 "ADMIN_IDS": ["an array containing the discord user IDs of any admins (you should start with your own to use slavbot properly)"],
 "WEATHER_KEY": "your API key for openweathermap (you don't need this, but slavbot will likely crash if you use the weather command without it)",
-"INTENTS": (int)"your gateway intents int"
+"INTENTS": "your gateway intents int"
 ```
 
 `sound_manifest.json` should look like this:
