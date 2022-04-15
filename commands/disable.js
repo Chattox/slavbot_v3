@@ -9,7 +9,6 @@ const disable = {
     if (isAdmin(message.author.id, true)) {
       if (args) {
         if (Object.keys(commandList).includes(args[0])) {
-          console.log('hello world');
           commandList[args[0]] = false;
           const jsonCommandList = JSON.stringify(commandList);
           fs.writeFile('./command_list.json', jsonCommandList, 'utf8').then(

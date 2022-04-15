@@ -102,22 +102,28 @@ client.on('messageCreate', async (message) => {
 
     // Check command against commandlist, if exists check if enabled, if enabled do the thing
     const commandList = require('./command_list.json');
-    if (
-      isCommand ||
-      (command.includes('rand') && Object.keys(commandList).includes(command))
-    ) {
-      if (commandList[command] === true || isAdmin(message.author.id, false)) {
+    if (isCommand || command.includes('rand')) {
+      if (
+        Object.keys(commandList).includes(command) &&
+        (commandList[command] === true || isAdmin(message.author.id, false))
+      ) {
         let func = require(`./commands/${command}.js`);
         if (args.length > 0) {
           func.execute(message, args);
         } else {
           func.execute(message);
         }
+      } else if (
+        Object.keys(commandList).includes(command) &&
+        !commandList[command]
+      ) {
+        console.log('----------');
+        console.log('Command disabled');
+        message.author.send(`"${command}" is disabled!`);
       } else {
         console.log('----------');
-        console.log('Command disabled or not found');
-        console.log(`Notifying ${message.author.username}`);
-        message.author.send("This command is disabled or doesn't exist!");
+        console.log('Command not found');
+        message.author.send(`"${command}" is not a valid command!`);
       }
     }
 
