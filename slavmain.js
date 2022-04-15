@@ -102,11 +102,11 @@ client.on('messageCreate', async (message) => {
 
     // Check command against commandlist, if exists check if enabled, if enabled do the thing
     const commandList = require('./command_list.json');
-    if (
-      isCommand ||
-      (command.includes('rand') && Object.keys(commandList).includes(command))
-    ) {
-      if (commandList[command] === true || isAdmin(message.author.id, false)) {
+    if (isCommand || command.includes('rand')) {
+      if (
+        Object.keys(commandList).includes(command) &&
+        (commandList[command] === true || isAdmin(message.author.id, false))
+      ) {
         let func = require(`./commands/${command}.js`);
         if (args.length > 0) {
           func.execute(message, args);
