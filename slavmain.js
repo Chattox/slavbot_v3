@@ -82,8 +82,6 @@ client.on('messageCreate', async (message) => {
     return;
   }
 
-  console.log(message.channel);
-
   // Decide if sound or other command
   const isCommand = message.content.startsWith(CMD_PREFIX);
 
