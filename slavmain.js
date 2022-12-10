@@ -58,7 +58,7 @@ client.once('ready', () => {
 
 // When get message, do thing
 client.on('messageCreate', async (message) => {
-  // If message author is bot or no prefix, don't do thing
+  // If message author is bot or msg has no prefix, don't do thing
   if (
     (!message.content.startsWith(SND_PREFIX) &&
       !message.content.startsWith(CMD_PREFIX)) ||
@@ -66,6 +66,23 @@ client.on('messageCreate', async (message) => {
   ) {
     return;
   }
+
+  // If message is in voice text channel, delete message, don't do command, DM message author that they're not supported currently
+  if (message.channel.type === 'GUILD_VOICE') {
+    console.log('----------');
+    const timeStamp = new Date();
+    console.log(timeStamp.toLocaleDateString(), timeStamp.toLocaleTimeString());
+    console.log(
+      `${message.author.username} attempted to use command in voice text channel ${message.channel.name}. Ignoring command and DMing author`
+    );
+    message.delete();
+    message.author.send(
+      "Using commands in voice text channels isn't currently supported, blyat"
+    );
+    return;
+  }
+
+  console.log(message.channel);
 
   // Decide if sound or other command
   const isCommand = message.content.startsWith(CMD_PREFIX);
