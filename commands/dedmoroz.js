@@ -1,5 +1,6 @@
 const { isAdmin } = require('../utils/isAdmin');
 const { shuffleArray } = require('../utils/shuffleArray');
+const regUsers = require('../regular_users.json');
 
 const dedmoroz = {
   name: 'dedmoroz',
@@ -29,17 +30,25 @@ const dedmoroz = {
       // Go through each santa user obj and DM them with their giftee and the rules
       console.log('DMing santas...');
       santas.forEach((santa, i) => {
+        const giftee = santas[(i + 1) % santas.length];
+        const gifteeSteamName = regUsers[giftee.id]?.steamId;
+        const gifteeSteamWishlistUrl = `https://store.steampowered.com/wishlist/profiles/${gifteeSteamName}/#sort=order`;
+
         santa
           .send(
-            `Welcome to Secret Slavbot ${new Date().getFullYear()}!\n` +
-              `Your giftee this year is **${
-                santas[(i + 1) % santas.length].username
-              }**!\n` +
+            `Welcome to Secret Slavbot ${new Date().getFullYear()}!\n\n` +
+              `Your giftee this year is :sparkles: **${giftee.username}**! :sparkles:\n` +
+              `${
+                gifteeSteamName
+                  ? `Your giftee's Steam wishlist: ${gifteeSteamWishlistUrl}\n\n`
+                  : `I couldn't find a wishlist for them, so make sure you have them added on Steam as you can access it from their profile!\n\n`
+              }` +
               `The rules are:\n` +
               `1) Send your gift on the *second* day of the Steam Winter Sale. This allows people to look through the store for the perfect gift!\n` +
               `2) Don't spend more than £15, give or take £2.\n` +
               `3) Make sure to update your own Steam wishlist to make it easier for your gifter!\n` +
-              `4) Don't tell anyone who your giftee is!`
+              `4) Don't tell anyone who your giftee is!\n\n` +
+              `P.S. Make sure your wishlist is set to public!`
           )
           .then((res) => {
             console.log(`${i + 1} out of ${santas.length} DMs sent!`);
