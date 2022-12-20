@@ -247,7 +247,7 @@ client.on('presenceUpdate', (oldPresence, newPresence) => {
     if (regUsers[newPresence.user.id.toString()].twitchSound != 'none') {
       // Make sure the update is an actual change, is Twitch, and that it's the first update containing twitch
       let oldPresenceNotTwitch = true;
-      if (typeof oldPresence !== undefined) {
+      if (typeof oldPresence !== undefined && oldPresence.activities !== null) {
         oldPresence.activities.forEach((activity) => {
           if (activity.type === 'STREAMING') {
             oldPresenceNotTwitch = false;
@@ -277,7 +277,9 @@ client.on('presenceUpdate', (oldPresence, newPresence) => {
         }
       } else {
         console.log('----------');
-        console.log('oldPresence was undefined');
+        console.log(
+          'oldPresence was undefined or oldPresence.activities was null'
+        );
       }
     }
   }
