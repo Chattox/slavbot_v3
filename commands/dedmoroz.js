@@ -16,6 +16,9 @@ const dedmoroz = {
           saleMonth - 1,
           saleDay + 1
         );
+        const sendGiftStartTimestamp = Math.floor(
+          sendGiftStartDate.getTime() / 1000
+        ); // this is extremely dumb and I should not have to do this
 
         // Loop through every user in the guild the message was sent to
         // Return a collection of all users with the secret santa role
@@ -57,7 +60,7 @@ const dedmoroz = {
                     : `I couldn't find a wishlist for them, so make sure you have them added on Steam as you can access it from their profile!\n\n`
                 }` +
                 `The rules are:\n` +
-                `1) Send your gift on the *second* day of the Steam Winter Sale. This allows people to look through the store for the perfect gift!\n` +
+                `1) Starting from <t:${sendGiftStartTimestamp}:t> <t:${sendGiftStartTimestamp}:D> (midnight GMT after the Steam sale starts), send your gift within 1 days's time.\n` +
                 `2) Don't spend more than £15, give or take £2.\n` +
                 `3) Make sure to update your own Steam wishlist to make it easier for your gifter!\n` +
                 `4) Don't tell anyone who your giftee is!\n\n` +
