@@ -16,9 +16,13 @@ const dedmoroz = {
           saleMonth - 1,
           saleDay + 1
         );
+        const sendGiftEndDate = new Date(saleYear, saleMonth - 1, saleDay + 2);
         const sendGiftStartTimestamp = Math.floor(
           sendGiftStartDate.getTime() / 1000
         ); // this is extremely dumb and I should not have to do this
+        const sendGiftEndTimestamp = Math.floor(
+          sendGiftEndDate.getTime() / 1000
+        );
 
         // Loop through every user in the guild the message was sent to
         // Return a collection of all users with the secret santa role
@@ -64,6 +68,7 @@ const dedmoroz = {
                 `2) Don't spend more than £15, give or take £2.\n` +
                 `3) Make sure to update your own Steam wishlist to make it easier for your gifter!\n` +
                 `4) Don't tell anyone who your giftee is!\n\n` +
+                `So just to be clear, the time period in which to send your gift starts at <t:${sendGiftStartTimestamp}:t> <t:${sendGiftStartTimestamp}:D> and ends at <t:${sendGiftEndTimestamp}:t> <t:${sendGiftEndTimestamp}:D>\n\n` +
                 `P.S. Make sure your wishlist is set to public!`
             )
             .then((res) => {
