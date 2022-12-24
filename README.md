@@ -4,8 +4,6 @@
 
 &nbsp;
 
-&nbsp;
-
 This is Slavbot, a discord bot for (preferably) smaller, personal servers. Main features are:
 
 - Soundboard, with ability to play random (and random curated lists) and specific sounds
@@ -13,6 +11,8 @@ This is Slavbot, a discord bot for (preferably) smaller, personal servers. Main 
 - Secret santa!
 - Admin-only trolling commands! Bonk people into other channels!
 - Some other stuff that literally never gets used like steam ratings and weather forecasts!
+
+&nbsp;
 
 ## Setup:
 
@@ -26,7 +26,7 @@ Clone repo and `npm i`
 
 Bit more involved now.
 
-Need to make the following .json files in the installation directory (I'll probably make this automated at some point):
+Need to make the following .json files and folder in the installation directory (I'll probably make this automated at some point):
 
 - `sound_manifest.json`
 - `regular_users.json`
@@ -72,11 +72,24 @@ You get the picture.
 {}
 ```
 
+Finally, create the following folders (you can leave them empty for now):
+
+- `sounds`
+- `secretSlavbotPairings`
+
+The `secretSlavbotPairings` folder is for the `dedmoroz` command to write logs to. This is so you have a list of pairings to reference in case anything goes wrong either with the command itself or your secret santas.
+
+&nbsp;
+
 ### Step 3: Running
+
+Running slavbot is super straightforward. Just run the following command:
 
 ```
 node slavmain.js
 ```
+
+&nbsp;
 
 ---
 
