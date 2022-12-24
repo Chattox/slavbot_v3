@@ -1,5 +1,6 @@
 const { isAdmin } = require('../utils/isAdmin');
 const { shuffleArray } = require('../utils/shuffleArray');
+const { logSecretSantaPairs } = require('../utils/logSecretSantaPairs');
 const regUsers = require('../regular_users.json');
 
 const dedmoroz = {
@@ -47,12 +48,15 @@ const dedmoroz = {
         // Shuffle santa array
         shuffleArray(santas);
 
+        const pairings = []; // array to store santa pairings to write to file for reference in case something goes wrong
+
         // Go through each santa user obj and DM them with their giftee and the rules
         console.log('DMing santas...');
         santas.forEach((santa, i) => {
           const giftee = santas[(i + 1) % santas.length];
           const gifteeSteamName = regUsers[giftee.id]?.steamId;
           const gifteeSteamWishlistUrl = `https://store.steampowered.com/wishlist/profiles/${gifteeSteamName}/#sort=order`;
+          pairings.push([santa.username, giftee.username]); // add pairing to pair array
 
           santa
             .send(
@@ -79,6 +83,7 @@ const dedmoroz = {
             })
             .catch((err) => console.log(err));
         });
+        logSecretSantaPairs(pairings, sendGiftStartDate);
       } else {
         message.author.send(
           'Dedmoroz requires a date argument formatted dd/mm/yyyy'
