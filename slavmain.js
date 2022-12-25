@@ -1,6 +1,8 @@
 // It's slav time
 const { SND_PREFIX, CMD_PREFIX, TOKEN, INTENTS } = require('./config.json');
 const { Client } = require('discord.js');
+const winston = require('winston');
+const DailyRotateFile = require('winston-daily-rotate-file');
 const fs = require('fs').promises;
 const client = new Client({ intents: INTENTS });
 const { isAdmin } = require('./utils/isAdmin');
@@ -9,6 +11,14 @@ const soundManifest = require('./sound_manifest');
 const regUsers = require('./regular_users.json');
 const { isEqual } = require('./utils/isEqual');
 const { isPlaying } = require('./utils/isPlaying');
+
+// Logging
+const rotateFileTransport = new DailyRotateFile({
+  level: 'info',
+  filename: 'slavlog-%DATE%.log',
+  datePattern: 'YYYY-MM-DD',
+  dirname: './logs',
+});
 
 client.once('ready', () => {
   // Read all filenames of the commands dir to check for new commands
