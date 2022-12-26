@@ -7,7 +7,7 @@ const sysLogCtx = (ctx) => {
   };
 };
 
-const cmdLogCtx = (prfx, usr, cmd, args) => {
+const cmdLogCtx = (prfx, usr, cmd, chnl, args) => {
   const cmdTypes = { '!': 'sound', '?': 'utility' };
   return {
     category: 'command',
@@ -15,15 +15,22 @@ const cmdLogCtx = (prfx, usr, cmd, args) => {
     user: usr.username,
     admin: isAdmin(usr.id, false),
     command: cmd,
+    channel: chnl.name,
     args: args,
   };
 };
 
-const warnLogCtx = (cat, usr = 'n/a', chnl = 'n/a') => {
+const warnLogCtx = (
+  cat,
+  usr = { username: 'n/a' },
+  cmd = 'n/a',
+  chnl = { name: 'n/a' }
+) => {
   return {
     category: cat,
     user: usr.username,
-    channel: chnl,
+    command: cmd,
+    channel: chnl.name,
   };
 };
 

@@ -108,17 +108,18 @@ client.on('messageCreate', async (message) => {
     return;
   }
 
+  // Decide if sound or other command
+  const isCommand = message.content.startsWith(CMD_PREFIX);
+
+  // Strip prefix separate command from args
+  const args = message.content.substring(1).toLowerCase().split(' ');
+  const command = args.shift();
+
   // If message is in voice text channel, delete message, don't do command, DM message author that they're not supported currently
   if (message.channel.type === 'GUILD_VOICE') {
-    console.log('----------');
-    const timeStamp = new Date();
-    console.log(timeStamp.toLocaleDateString(), timeStamp.toLocaleTimeString());
     logger.warn(
-      `${message.author.username} attempted to use command in voice text channel ${message.channel.name}. Ignoring command and DMing author`,
-      warnLogCtx('command', message.author.username, message.channel.name)
-    );
-    console.log(
-      `${message.author.username} attempted to use command in voice text channel ${message.channel.name}. Ignoring command and DMing author`
+      `${message.author.username} attempted to use command "${command}" in voice text channel ${message.channel.name}. Ignoring command and DMing author`,
+      warnLogCtx('command', message.author, command, message.channel)
     );
     message.delete();
     message.author.send(
@@ -127,17 +128,16 @@ client.on('messageCreate', async (message) => {
     return;
   }
 
-  // Decide if sound or other command
-  const isCommand = message.content.startsWith(CMD_PREFIX);
-
-  // Strip prefix separate command from args
-  const args = message.content.substring(1).toLowerCase().split(' ');
-  const command = args.shift();
-
   // Log some info
   logger.info(
     `${message.author.username} invoked command ${command}`,
-    cmdLogCtx(message.content[0], message.author, command, args)
+    cmdLogCtx(
+      message.content[0],
+      message.author,
+      command,
+      message.channel,
+      args
+    )
   );
 
   // Check if slavbot is currently playing a sound, if so refuse command
@@ -174,12 +174,16 @@ client.on('messageCreate', async (message) => {
         Object.keys(commandList).includes(command) &&
         !commandList[command]
       ) {
-        console.log('----------');
-        console.log('Command disabled');
+        logger.warn(
+          `${message.author.username} invoked disabled command ${command}`,
+          warnLogCtx('command', message.author, command, message.channel)
+        );
         message.author.send(`"${command}" is disabled!`);
       } else {
-        console.log('----------');
-        console.log('Command not found');
+        logger.warn(
+          `${message.author.username} invoked command "${command}" but command was not found`,
+          warnLogCtx('command', message.author, command, message.channel)
+        );
         message.author.send(`"${command}" is not a valid command!`);
       }
     }
@@ -189,22 +193,41 @@ client.on('messageCreate', async (message) => {
     else if (soundCommands.includes(command)) {
       if (message.member.voice.channel) {
         playSound(command, message.member.voice.channel).catch((err) =>
-          console.log(err)
+          logger.error(
+            'Error playing sound from command',
+            cmdLogCtx(
+              message.content[0],
+              message.author,
+              command,
+              message.channel,
+              args
+            ),
+            err
+          )
         );
       } else {
-        console.log('User was not in a voice channel');
+        logger.warn(
+          `${message.author.username} invoked sound command "${command}" while not in a voice channel`,
+          warnLogCtx('command', message.author, command, message.channel)
+        );
       }
     }
 
     // If command not recognised
     else {
       message.author.send(`"${command}" is not a recognised command, урод.`);
-      console.log('Command not recognised');
+      logger.warn(
+        `${message.author.username} invoked command "${command}" but command was not found`,
+        warnLogCtx('command', message.author, command, message.channel)
+      );
     }
     //delete message when done
     message.delete();
   } else {
-    console.log('Sound already playing! Rejecting command.');
+    logger.warn(
+      'Sound already playing, rejecting command',
+      warnLogCtx('command', message.author, command, message.channel)
+    );
     message.author.send('Wait your damn turn, урод');
     message.delete();
   }
