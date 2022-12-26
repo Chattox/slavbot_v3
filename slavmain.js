@@ -342,9 +342,14 @@ client.on('presenceUpdate', (oldPresence, newPresence) => {
                 .filter((channel) => channel.isVoice())
                 .first();
 
-              console.log('----------');
-              console.log(
-                `${newPresence.user.username} has gone live on ${activity.name}`
+              logger.info(
+                `${newPresence.user.username} has gone live on ${activity.name}`,
+                infoLogCtx(
+                  'presenceUpdate',
+                  newPresence.user,
+                  undefined,
+                  undefined
+                )
               );
 
               playSound(
@@ -355,8 +360,10 @@ client.on('presenceUpdate', (oldPresence, newPresence) => {
           });
         }
       } else {
-        console.log('----------');
-        console.log('oldPresence was null');
+        logger.warn(
+          'oldPresence was null',
+          warnLogCtx('presenceUpdate', newPresence.user, undefined, undefined)
+        );
       }
     }
   }
