@@ -7,7 +7,13 @@ const sysLogCtx = (ctx) => {
   };
 };
 
-const cmdLogCtx = (prfx, usr, cmd, chnl, args) => {
+const cmdLogCtx = (
+  prfx = 'n/a',
+  usr = { username: 'n/a' },
+  cmd = 'n/a',
+  chnl = { name: 'n/a' },
+  args = 'n/a'
+) => {
   const cmdTypes = { '!': 'sound', '?': 'utility' };
   return {
     category: 'command',
@@ -20,8 +26,8 @@ const cmdLogCtx = (prfx, usr, cmd, chnl, args) => {
   };
 };
 
-const warnLogCtx = (
-  cat,
+const infoLogCtx = (
+  cat = 'n/a',
   usr = { username: 'n/a' },
   cmd = 'n/a',
   chnl = { name: 'n/a' }
@@ -34,4 +40,18 @@ const warnLogCtx = (
   };
 };
 
-module.exports = { sysLogCtx, cmdLogCtx, warnLogCtx };
+const warnLogCtx = (
+  cat = 'n/a',
+  usr = { username: 'n/a' },
+  cmd = 'n/a',
+  chnl = { name: 'n/a' }
+) => {
+  return {
+    category: cat,
+    user: usr.username,
+    command: cmd,
+    channel: chnl.name,
+  };
+};
+
+module.exports = { sysLogCtx, cmdLogCtx, infoLogCtx, warnLogCtx };

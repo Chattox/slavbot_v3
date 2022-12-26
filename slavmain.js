@@ -16,6 +16,7 @@ const { format } = require('path');
 const {
   sysLogCtx,
   cmdLogCtx,
+  infoLogCtx,
   warnLogCtx,
 } = require('./utils/loggingContextHelpers');
 
@@ -251,21 +252,27 @@ client.on('voiceStateUpdate', (oldState, newState) => {
       newStateChannel !== null
     ) {
       // For user joining voice, or coming from AFK channel
-      console.log('----------');
-      const timeStamp = new Date();
-      console.log(
-        timeStamp.toLocaleDateString(),
-        timeStamp.toLocaleTimeString()
-      );
       if (newStateChannel === null) {
-        console.log(
-          `${newState.member.user.username} has joined a channel but could not get channel information`
+        logger.warn(
+          `${newState.member.user.username} has joined a channel but could not get channel information`,
+          warnLogCtx(
+            'voiceStateUpdate',
+            newState.member.user,
+            undefined,
+            newStateChannel
+          )
         );
       } else {
-        console.log(
-          `${newState.member.user.username} has joined ${
+        logger.info(
+          `${newState.member.user.username} has joined channel ${
             newStateChannel.name || 'no name'
-          }`
+          }`,
+          infoLogCtx(
+            'voiceStateUpdate',
+            newState.member.user,
+            undefined,
+            newStateChannel
+          )
         );
       }
       const regUsers = require('./regular_users.json');
@@ -280,14 +287,14 @@ client.on('voiceStateUpdate', (oldState, newState) => {
       }
     } else if (newStateChannel === null) {
       // For user leaving voice
-      console.log('----------');
-      const timeStamp = new Date();
-      console.log(
-        timeStamp.toLocaleDateString(),
-        timeStamp.toLocaleTimeString()
-      );
-      console.log(
-        `${newState.member.user.username} has left ${oldStateChannel.name}`
+      logger.info(
+        `${newState.member.user.username} has left channel ${oldStateChannel.name}`,
+        infoLogCtx(
+          'voiceStateUpdate',
+          newState.member.user,
+          undefined,
+          oldStateChannel
+        )
       );
       const regUsers = require('./regular_users.json');
       if (oldState.member.id in regUsers) {
@@ -297,11 +304,18 @@ client.on('voiceStateUpdate', (oldState, newState) => {
       }
     }
   } else {
-    console.log('----------');
-    console.log(
+    logger.info(
       `${newState.member.user.username} ${
         oldState.channel === null ? 'joined' : 'left'
-      } but slavbot was already playing something`
+      } channel ${
+        oldState.channel.name
+      } but slavbot was already playing something`,
+      infoLogCtx(
+        'voiceStateUpdate',
+        newState.member.user,
+        undefined,
+        oldState.channel != null ? oldState.channel : newState.channel
+      )
     );
   }
 });
