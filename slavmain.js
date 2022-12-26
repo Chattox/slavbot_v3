@@ -11,6 +11,13 @@ const soundManifest = require('./sound_manifest');
 const regUsers = require('./regular_users.json');
 const { isEqual } = require('./utils/isEqual');
 const { isPlaying } = require('./utils/isPlaying');
+const { createLogger } = require('winston');
+const { format } = require('path');
+const {
+  sysLogCtx,
+  cmdLogCtx,
+  warnLogCtx,
+} = require('./utils/loggingContextHelpers');
 
 // Logging
 const rotateFileTransport = new DailyRotateFile({
@@ -20,10 +27,30 @@ const rotateFileTransport = new DailyRotateFile({
   dirname: './logs',
 });
 
+const consoleTransport = new winston.transports.Console({
+  format: winston.format.combine(
+    winston.format.colorize(),
+    winston.format.simple()
+  ),
+  level: 'silly',
+});
+
+const logger = createLogger({
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp({
+      format: 'YYYY-MM-DD HH:mm:ss',
+    }),
+    winston.format.errors({ stack: true }),
+    winston.format.json()
+  ),
+  transports: [rotateFileTransport, consoleTransport],
+});
+
 client.once('ready', () => {
   // Read all filenames of the commands dir to check for new commands
   fs.readFile('./command_list.json').then((data) => {
-    console.log('Checking for new commands...');
+    logger.info('Checking for new commands...', sysLogCtx('startup'));
     const commandListFile = JSON.parse(data);
     const cmdListFileOrig = {};
     Object.assign(cmdListFileOrig, commandListFile);
@@ -33,7 +60,7 @@ client.once('ready', () => {
         files.forEach((file) => {
           commandName = file.slice(0, -3);
           if (!Object.keys(commandListFile).includes(commandName)) {
-            console.log(`New command: ${commandName}!`);
+            logger.info(`New command: ${commandName}!`, sysLogCtx('startup'));
             commandListFile[commandName] = true;
           }
         });
@@ -51,17 +78,21 @@ client.once('ready', () => {
           const jsonCommandListFile = JSON.stringify(commandListFile);
           fs.writeFile('./command_list.json', jsonCommandListFile, 'utf8')
             .then((res) => {
-              console.log('command_list.json written!');
+              logger.info('command_list.json written!', sysLogCtx('startup'));
             })
             .catch((err) => {
-              console.log(err);
+              logger.error(
+                'Error writing command_list.json',
+                sysLogCtx('startup'),
+                err
+              );
             });
         } else {
-          console.log('No new commands found!');
+          logger.info('No new commands found!', sysLogCtx('startup'));
         }
       })
       .then(() => {
-        console.log('READY!');
+        logger.info('READY!', sysLogCtx('startup'));
       });
   });
 });
@@ -82,6 +113,10 @@ client.on('messageCreate', async (message) => {
     console.log('----------');
     const timeStamp = new Date();
     console.log(timeStamp.toLocaleDateString(), timeStamp.toLocaleTimeString());
+    logger.warn(
+      `${message.author.username} attempted to use command in voice text channel ${message.channel.name}. Ignoring command and DMing author`,
+      warnLogCtx('command', message.author.username, message.channel.name)
+    );
     console.log(
       `${message.author.username} attempted to use command in voice text channel ${message.channel.name}. Ignoring command and DMing author`
     );
@@ -99,14 +134,11 @@ client.on('messageCreate', async (message) => {
   const args = message.content.substring(1).toLowerCase().split(' ');
   const command = args.shift();
 
-  // Log some info to console
-  console.log('----------');
-  const timeStamp = new Date();
-  console.log(timeStamp.toLocaleDateString(), timeStamp.toLocaleTimeString());
-  console.log(`User: ${message.author.username}`);
-  console.log(`Admin: ${isAdmin(message.author.id, false)}`);
-  console.log(`Command: ${command}`);
-  console.log(`Args: ${args}`);
+  // Log some info
+  logger.info(
+    `${message.author.username} invoked command ${command}`,
+    cmdLogCtx(message.content[0], message.author, command, args)
+  );
 
   // Check if slavbot is currently playing a sound, if so refuse command
   if (
