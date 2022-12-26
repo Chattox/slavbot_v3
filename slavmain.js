@@ -277,9 +277,7 @@ client.on('presenceUpdate', (oldPresence, newPresence) => {
         }
       } else {
         console.log('----------');
-        console.log(
-          'oldPresence was undefined or oldPresence.activities was null'
-        );
+        console.log('oldPresence was null');
       }
     }
   }
