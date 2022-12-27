@@ -3,11 +3,7 @@ const regUsers = require('../regular_users');
 const fs = require('fs').promises;
 const { isAdmin } = require('../utils/isAdmin');
 const { join } = require('path');
-const {
-  infoLogCtx,
-  warnLogCtx,
-  errLogCtx,
-} = require('../utils/loggingContextHelpers');
+const { infoLogCtx, warnLogCtx } = require('../utils/loggingContextHelpers');
 
 const regjoin = {
   name: 'regjoin',
