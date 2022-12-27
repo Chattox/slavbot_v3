@@ -43,14 +43,21 @@ const playSound = async (sound, channel, logger, isRand = false) => {
   }
 };
 
-const randSound = (soundLists, message, logger) => {
+const randSound = (soundLists, channel, logger) => {
+  if (!channel) {
+    logger.warn(
+      `User invoked rand command while not in a voice channel`,
+      warnLogCtx('command', undefined, undefined, undefined, undefined)
+    );
+    return;
+  }
   // Create new array that will contain all possible random sounds
   let randsounds = [];
   // Populate array with combination of regular and random only sound lists from sound_manifest.json
   randsounds = randsounds.concat(...soundLists);
   // Pick a random sound from the array and play
   randChoice = randsounds[Math.floor(Math.random() * randsounds.length)];
-  playSound(randChoice, message, logger, true);
+  playSound(randChoice, channel, logger, true);
 };
 
 module.exports = { playSound, randSound };
