@@ -1,11 +1,7 @@
 const { isAdmin } = require('../utils/isAdmin');
 const fs = require('fs').promises;
 const axios = require('axios').default;
-const {
-  infoLogCtx,
-  warnLogCtx,
-  errLogCtx,
-} = require('../utils/loggingContextHelpers');
+const { infoLogCtx, errLogCtx } = require('../utils/loggingContextHelpers');
 
 // Download Steam's applist and save to file, overwriting if already exists.
 
