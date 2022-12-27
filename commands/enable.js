@@ -8,7 +8,7 @@ const enable = {
   name: 'enable',
   description: 'enable a command to be used in slavbot',
   execute: function (message, args, logger) {
-    if (isAdmin(message.author.id, true)) {
+    if (isAdmin(message.author.id, true, message)) {
       const logInfo = [
         'utility',
         message.author,

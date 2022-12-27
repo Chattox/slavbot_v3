@@ -152,11 +152,11 @@ client.on('messageCreate', async (message) => {
   if (
     !isPlaying(client) ||
     command === 'stop' ||
-    isAdmin(message.author.id, false)
+    isAdmin(message.author.id, false, undefined)
   ) {
     // Create possible list of sound commands based on if user is admin
     let soundCommands = [...soundManifest.regularSounds];
-    if (isAdmin(message.author.id, false)) {
+    if (isAdmin(message.author.id, false, undefined)) {
       soundManifest.randsounds.forEach((sound) => {
         soundCommands.push(sound);
       });
@@ -170,7 +170,8 @@ client.on('messageCreate', async (message) => {
     if (isCommand || command.includes('rand')) {
       if (
         Object.keys(commandList).includes(command) &&
-        (commandList[command] === true || isAdmin(message.author.id, false))
+        (commandList[command] === true ||
+          isAdmin(message.author.id, false, undefined))
       ) {
         let func = require(`./commands/${command}.js`);
         if (args.length > 0) {

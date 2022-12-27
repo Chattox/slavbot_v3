@@ -14,7 +14,7 @@ const reguser = {
   description:
     'creates a regular user object from given discord ID and adds to regular_users.json',
   execute: function (message, args, logger) {
-    if (isAdmin(message.author.id, true)) {
+    if (isAdmin(message.author.id, true, message)) {
       const logInfo = [
         'utility',
         message.author,

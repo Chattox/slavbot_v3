@@ -19,7 +19,7 @@ const cmdLogCtx = (
     category: 'command',
     type: cmdTypes[prfx],
     user: usr.username,
-    admin: isAdmin(usr.id, false),
+    admin: isAdmin(usr.id, false, undefined),
     command: cmd,
     channel: chnl.name,
     args: args,
@@ -45,7 +45,7 @@ const infoLogCtx = (
   return {
     category: cat,
     user: usr.username,
-    admin: isAdmin(usr.id, false),
+    admin: isAdmin(usr.id, false, undefined),
     command: cmd,
     channel: chnl.name,
     args: args,
@@ -62,7 +62,7 @@ const warnLogCtx = (
   return {
     category: cat,
     user: usr.username,
-    admin: isAdmin(usr.id, false),
+    admin: isAdmin(usr.id, false, undefined),
     command: cmd,
     channel: chnl.name,
     args: args,
@@ -80,7 +80,7 @@ const errLogCtx = (
   return {
     category: cat,
     user: usr.username,
-    admin: isAdmin(usr.id, false),
+    admin: isAdmin(usr.id, false, undefined),
     command: cmd,
     channel: chnl.name,
     args: args,

@@ -8,7 +8,7 @@ const bonk = {
   name: 'bonk',
   description: 'bonks a user into another channel',
   execute: function (message, args, logger) {
-    if (isAdmin(message.author.id, true)) {
+    if (isAdmin(message.author.id, true, message)) {
       const logInfo = [
         'utility',
         message.author,

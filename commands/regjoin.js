@@ -20,7 +20,7 @@ const regjoin = {
     if (args) {
       const userID = args[0];
       const joinSound = args[1];
-      if (isAdmin(message.author.id, true)) {
+      if (isAdmin(message.author.id, true, message)) {
         if (
           joinSound === 'none' ||
           ((soundManifest.regularSounds.includes(joinSound) ||

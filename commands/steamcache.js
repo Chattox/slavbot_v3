@@ -10,7 +10,7 @@ const steamcache = {
   description:
     'download steam applist and save to file, overwriting if already exists',
   execute: function (message, args, logger) {
-    if (isAdmin(message.author.id, true)) {
+    if (isAdmin(message.author.id, true, message)) {
       const logInfo = [
         'utility',
         message.author,

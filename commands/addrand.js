@@ -10,7 +10,7 @@ const addrand = {
   name: 'addrand',
   description: 'add sounds to specific random lists',
   execute: function (message, args, logger) {
-    if (isAdmin(message.author.id, true)) {
+    if (isAdmin(message.author.id, true, message)) {
       if (args) {
         const soundManifest = require('../sound_manifest.json');
         const target = args[0];

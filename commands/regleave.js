@@ -19,7 +19,7 @@ const regleave = {
     if (args) {
       const userID = args[0];
       const leaveSound = args[1];
-      if (isAdmin(message.author.id, true)) {
+      if (isAdmin(message.author.id, true, message)) {
         if (
           leaveSound === 'none' ||
           (soundManifest.regularSounds.includes(leaveSound) &&

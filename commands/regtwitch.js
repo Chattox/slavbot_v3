@@ -23,7 +23,7 @@ const regtwitch = {
     if (args) {
       const userId = args[0];
       const twitchSound = args[1];
-      if (isAdmin(message.author.id, true)) {
+      if (isAdmin(message.author.id, true, message)) {
         if (
           twitchSound === 'none' ||
           ((soundManifest.regularSounds.includes(twitchSound) ||

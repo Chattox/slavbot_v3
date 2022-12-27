@@ -13,7 +13,7 @@ const dedmoroz = {
   description:
     'runs a secret santa-like function using a secret santa role assigned to particiants, DMs all participants with their giftee',
   execute: function (message, args, logger) {
-    if (isAdmin(message.author.id, true)) {
+    if (isAdmin(message.author.id, true, message)) {
       if (args && /\d{2}\/\d{2}\/\d{4}/g.test(args[0])) {
         const dateArg = args[0].split('/').map(Number);
         const [saleDay, saleMonth, saleYear] = dateArg;

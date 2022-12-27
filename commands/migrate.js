@@ -12,7 +12,7 @@ const migrate = {
   name: 'migrate',
   description: 'moves all users from one channel to another',
   execute: function (message, args, logger) {
-    if (isAdmin(message.author.id, true)) {
+    if (isAdmin(message.author.id, true, message)) {
       const logInfo = [
         'utility',
         message.author,

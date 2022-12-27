@@ -11,7 +11,7 @@ const setrand = {
   name: 'setrand',
   description: 'toggles whether a sound is random only or not',
   execute: function (message, args, logger) {
-    if (isAdmin(message.author.id, true)) {
+    if (isAdmin(message.author.id, true, message)) {
       const logInfo = [
         'utility',
         message.author,

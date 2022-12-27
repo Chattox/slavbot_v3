@@ -12,7 +12,7 @@ const regname = {
   name: 'regname',
   description: 'updates the name property of existing regular user object',
   execute: function (message, args, logger) {
-    if (isAdmin(message.author.id, true)) {
+    if (isAdmin(message.author.id, true, message)) {
       const logInfo = [
         'utility',
         message.author,
