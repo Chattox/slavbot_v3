@@ -1,11 +1,20 @@
 const fs = require('fs').promises;
+const { infoLogCtx, errLogCtx } = require('../utils/loggingContextHelpers');
 
 // Read through every sound file in the sounds folder and save their names to a manifest file so they can be used as commands and picked from randomly
-const createSoundManifest = () => {
+const createSoundManifest = (message, args, logger) => {
+  const logInfo = [
+    'util function',
+    message.author,
+    'createSoundManifest',
+    message.channel,
+    args,
+  ];
   fs.readdir(__dirname + '/../sounds', { withFileTypes: true }).then(
     (soundList) => {
-      console.log(
-        `Found ${soundList.length} sounds, adding to manifest object...`
+      logger.info(
+        `Found ${soundList.length} sounds, adding to manifest object`,
+        infoLogCtx(...logInfo)
       );
 
       // Require in the manifest object we'll be changing
@@ -13,19 +22,25 @@ const createSoundManifest = () => {
 
       // Create and populate an array of sounds from sound folder that we'll be replacing the current manifest.regularsounds with
       const newSoundList = [];
+      const soundLoggingList = [];
       soundList.forEach((sound) => {
         // Check if the entry is a folder, if it is, skip it. If it's a file, add its name to the array
         if (!sound.isDirectory()) {
           const soundName = sound.name.slice(0, -4);
           if (soundManifest.randsounds.includes(soundName)) {
-            console.log(`${soundName} is already a random sound`);
+            soundLoggingList.push({ [sound.name.slice(0, -4)]: 'randomOnly' });
           } else {
-            console.log(`Adding sound ${sound.name}`);
+            logger.info(`Adding sound ${sound.name}`, infoLogCtx(...logInfo));
+            soundLoggingList.push({ [sound.name.slice(0, -4)]: 'added' });
             newSoundList.push(sound.name.slice(0, -4));
           }
         } else {
-          console.log(`Skipping folder ${sound.name}`);
+          soundLoggingList.push({ [sound.name]: 'folder' });
         }
+      });
+      logger.info('Sound manifest object created', {
+        ...infoLogCtx(...logInfo),
+        soundManifest: soundLoggingList,
       });
       soundManifest.regularSounds = newSoundList;
 
@@ -37,10 +52,13 @@ const createSoundManifest = () => {
         'utf8'
       )
         .then((res) => {
-          console.log('sound_manifest.json written!');
+          logger.info('sound_manifest.json written', infoLogCtx(...logInfo));
         })
         .catch((err) => {
-          console.log(err);
+          logger.error(
+            'Error writing sound_manifest.json',
+            errLogCtx(...logInfo, err)
+          );
         });
     }
   );
