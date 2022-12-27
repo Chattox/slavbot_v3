@@ -5,8 +5,6 @@ const isAdmin = (id, sendDm) => {
     return true;
   } else {
     if (sendDm) {
-      console.log('----------');
-      console.log('User is not admin');
       message.author.send('This command is for admins only, blyat');
     }
     return false;
