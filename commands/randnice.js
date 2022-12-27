@@ -4,8 +4,8 @@ const { randSound } = require('../slavsound');
 const randnice = {
   name: 'randnice',
   description: 'plays a random "nice" sound',
-  execute: function (message) {
-    randSound([soundManifest.randnice], message.member.voice.channel);
+  execute: function (message, logger) {
+    randSound([soundManifest.randnice], message.member.voice.channel, logger);
   },
 };
 
