@@ -8,7 +8,7 @@ const steamcache = {
   name: 'steamcache',
   description:
     'download steam applist and save to file, overwriting if already exists',
-  execute: function (message) {
+  execute: function (message, args, logger) {
     if (isAdmin(message.author.id, true)) {
       const appListUrl =
         'https://api.steampowered.com/ISteamApps/GetAppList/v0001/';

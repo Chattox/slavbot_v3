@@ -3,7 +3,7 @@ const soundManifest = require('../sound_manifest.json');
 const slavcount = {
   name: 'slavcount',
   description: 'Posts total number of slavsounds in chat',
-  execute: function (message) {
+  execute: function (message, args, logger) {
     let count = 0;
     count += soundManifest.regularSounds.length;
     count += soundManifest.randsounds.length;
