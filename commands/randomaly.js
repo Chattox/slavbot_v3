@@ -4,7 +4,7 @@ const { randSound } = require('../slavsound');
 const randomaly = {
   name: 'randomaly',
   description: 'plays a random anomaly sound',
-  execute: function (message, logger) {
+  execute: function (message, args, logger) {
     randSound([soundManifest.randomaly], message.member.voice.channel, logger);
   },
 };

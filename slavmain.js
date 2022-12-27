@@ -176,7 +176,7 @@ client.on('messageCreate', async (message) => {
         if (args.length > 0) {
           func.execute(message, args, logger);
         } else {
-          func.execute(message, logger);
+          func.execute(message, undefined, logger);
         }
       } else if (
         Object.keys(commandList).includes(command) &&
