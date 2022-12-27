@@ -26,6 +26,15 @@ const cmdLogCtx = (
   };
 };
 
+const sndLogCtx = (snd = 'n/a', chnl = { name: 'n/a' }, isRand = false) => {
+  return {
+    category: 'sound',
+    sound: snd,
+    channel: chnl.name,
+    isRand: isRand,
+  };
+};
+
 const infoLogCtx = (
   cat = 'n/a',
   usr = { username: 'n/a' },
@@ -35,6 +44,7 @@ const infoLogCtx = (
   return {
     category: cat,
     user: usr.username,
+    admin: isAdmin(usr.id, false),
     command: cmd,
     channel: chnl.name,
   };
@@ -49,9 +59,10 @@ const warnLogCtx = (
   return {
     category: cat,
     user: usr.username,
+    admin: isAdmin(usr.id, false),
     command: cmd,
     channel: chnl.name,
   };
 };
 
-module.exports = { sysLogCtx, cmdLogCtx, infoLogCtx, warnLogCtx };
+module.exports = { sysLogCtx, cmdLogCtx, sndLogCtx, infoLogCtx, warnLogCtx };
