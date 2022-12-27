@@ -74,7 +74,8 @@ const errLogCtx = (
   usr = { username: 'n/a' },
   cmd = 'n/a',
   chnl = { name: 'n/a' },
-  args = 'n/a'
+  args = 'n/a',
+  err = 'n/a'
 ) => {
   return {
     category: cat,
@@ -83,6 +84,7 @@ const errLogCtx = (
     command: cmd,
     channel: chnl.name,
     args: args,
+    error: err,
   };
 };
 

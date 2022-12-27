@@ -38,8 +38,7 @@ const playSound = async (sound, channel, logger, isRand = false) => {
     connection.destroy();
     logger.error(
       'Error playing sound, this may be due to timing out from not having permission to join channel, or network issues',
-      sndLogCtx(sound, channel, isRand),
-      err
+      { ...sndLogCtx(sound, channel, isRand), error: err }
     );
   }
 };

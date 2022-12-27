@@ -18,6 +18,7 @@ const {
   cmdLogCtx,
   infoLogCtx,
   warnLogCtx,
+  errLogCtx,
 } = require('./utils/loggingContextHelpers');
 
 // Logging
@@ -84,8 +85,14 @@ client.once('ready', () => {
             .catch((err) => {
               logger.error(
                 'Error writing command_list.json',
-                sysLogCtx('startup'),
-                err
+                errLogCtx(
+                  'startup',
+                  undefined,
+                  undefined,
+                  undefined,
+                  undefined,
+                  err
+                )
               );
             });
         } else {
@@ -196,14 +203,14 @@ client.on('messageCreate', async (message) => {
         playSound(command, message.member.voice.channel, logger).catch((err) =>
           logger.error(
             'Error playing sound from command',
-            cmdLogCtx(
-              message.content[0],
+            errLogCtx(
+              'command',
               message.author,
               command,
               message.channel,
-              args
-            ),
-            err
+              args,
+              err
+            )
           )
         );
       } else {

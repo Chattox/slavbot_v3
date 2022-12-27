@@ -59,7 +59,10 @@ const addrand = {
               );
             })
             .catch((err) => {
-              logger.error(`Error writing to file`, errLogCtx(...logInfo), err);
+              logger.error(`Error writing to file`, {
+                ...errLogCtx(...logInfo),
+                error: err,
+              });
             });
         } else {
           logger.warn(
