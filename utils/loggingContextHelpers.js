@@ -69,4 +69,28 @@ const warnLogCtx = (
   };
 };
 
-module.exports = { sysLogCtx, cmdLogCtx, sndLogCtx, infoLogCtx, warnLogCtx };
+const errLogCtx = (
+  cat = 'n/a',
+  usr = { username: 'n/a' },
+  cmd = 'n/a',
+  chnl = { name: 'n/a' },
+  args = 'n/a'
+) => {
+  return {
+    category: cat,
+    user: usr.username,
+    admin: isAdmin(usr.id, false),
+    command: cmd,
+    channel: chnl.name,
+    args: args,
+  };
+};
+
+module.exports = {
+  sysLogCtx,
+  cmdLogCtx,
+  sndLogCtx,
+  infoLogCtx,
+  warnLogCtx,
+  errLogCtx,
+};
