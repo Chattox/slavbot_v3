@@ -9,7 +9,7 @@ const disable = {
   execute: function (message, args, logger) {
     if (isAdmin(message.author.id, true)) {
       const logInfo = [
-        'command',
+        'utility',
         message.author,
         'disable',
         message.channel,
