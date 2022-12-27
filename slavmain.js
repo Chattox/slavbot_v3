@@ -167,9 +167,9 @@ client.on('messageCreate', async (message) => {
       ) {
         let func = require(`./commands/${command}.js`);
         if (args.length > 0) {
-          func.execute(message, args);
+          func.execute(message, args, logger);
         } else {
-          func.execute(message);
+          func.execute(message, logger);
         }
       } else if (
         Object.keys(commandList).includes(command) &&
