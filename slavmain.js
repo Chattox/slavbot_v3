@@ -271,7 +271,8 @@ client.on('voiceStateUpdate', (oldState, newState) => {
             'voiceStateUpdate',
             newState.member.user,
             undefined,
-            newStateChannel
+            newStateChannel,
+            undefined
           )
         );
       }
@@ -293,7 +294,8 @@ client.on('voiceStateUpdate', (oldState, newState) => {
           'voiceStateUpdate',
           newState.member.user,
           undefined,
-          oldStateChannel
+          oldStateChannel,
+          undefined
         )
       );
       const regUsers = require('./regular_users.json');
@@ -314,7 +316,8 @@ client.on('voiceStateUpdate', (oldState, newState) => {
         'voiceStateUpdate',
         newState.member.user,
         undefined,
-        oldState.channel != null ? oldState.channel : newState.channel
+        oldState.channel != null ? oldState.channel : newState.channel,
+        undefined
       )
     );
   }
@@ -347,6 +350,7 @@ client.on('presenceUpdate', (oldPresence, newPresence) => {
                 infoLogCtx(
                   'presenceUpdate',
                   newPresence.user,
+                  undefined,
                   undefined,
                   undefined
                 )

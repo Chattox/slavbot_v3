@@ -39,7 +39,8 @@ const infoLogCtx = (
   cat = 'n/a',
   usr = { username: 'n/a' },
   cmd = 'n/a',
-  chnl = { name: 'n/a' }
+  chnl = { name: 'n/a' },
+  args = 'n/a'
 ) => {
   return {
     category: cat,
@@ -47,6 +48,7 @@ const infoLogCtx = (
     admin: isAdmin(usr.id, false),
     command: cmd,
     channel: chnl.name,
+    args: args,
   };
 };
 
@@ -54,7 +56,8 @@ const warnLogCtx = (
   cat = 'n/a',
   usr = { username: 'n/a' },
   cmd = 'n/a',
-  chnl = { name: 'n/a' }
+  chnl = { name: 'n/a' },
+  args = 'n/a'
 ) => {
   return {
     category: cat,
@@ -62,6 +65,7 @@ const warnLogCtx = (
     admin: isAdmin(usr.id, false),
     command: cmd,
     channel: chnl.name,
+    args: args,
   };
 };
 
