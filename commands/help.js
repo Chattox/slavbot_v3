@@ -3,9 +3,8 @@ const soundManifest = require('../sound_manifest');
 const help = {
   name: 'help',
   description: 'DMs user with a list of usable sound commands',
-  execute: function (message) {
+  execute: function (message, args, logger) {
     let soundMsg = '';
-    console.log(soundManifest.regularSounds);
     soundManifest.regularSounds.forEach((sound) => {
       soundMsg += `\!${sound}\n`;
       if (soundMsg.length > 1900) {

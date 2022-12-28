@@ -1,6 +1,8 @@
 // It's slav time
 const { SND_PREFIX, CMD_PREFIX, TOKEN, INTENTS } = require('./config.json');
 const { Client } = require('discord.js');
+const winston = require('winston');
+const DailyRotateFile = require('winston-daily-rotate-file');
 const fs = require('fs').promises;
 const client = new Client({ intents: INTENTS });
 const { isAdmin } = require('./utils/isAdmin');
@@ -9,11 +11,48 @@ const soundManifest = require('./sound_manifest');
 const regUsers = require('./regular_users.json');
 const { isEqual } = require('./utils/isEqual');
 const { isPlaying } = require('./utils/isPlaying');
+const { createLogger } = require('winston');
+const { format } = require('path');
+const {
+  sysLogCtx,
+  cmdLogCtx,
+  infoLogCtx,
+  warnLogCtx,
+  errLogCtx,
+} = require('./utils/loggingContextHelpers');
+
+// Logging
+const rotateFileTransport = new DailyRotateFile({
+  level: 'info',
+  filename: 'slavlog-%DATE%.log',
+  datePattern: 'YYYY-MM-DD',
+  dirname: './logs',
+});
+
+const consoleTransport = new winston.transports.Console({
+  format: winston.format.combine(
+    winston.format.colorize(),
+    winston.format.simple()
+  ),
+  level: 'silly',
+});
+
+const logger = createLogger({
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp({
+      format: 'YYYY-MM-DD HH:mm:ss',
+    }),
+    winston.format.errors({ stack: true }),
+    winston.format.json()
+  ),
+  transports: [rotateFileTransport, consoleTransport],
+});
 
 client.once('ready', () => {
   // Read all filenames of the commands dir to check for new commands
   fs.readFile('./command_list.json').then((data) => {
-    console.log('Checking for new commands...');
+    logger.info('Checking for new commands...', sysLogCtx('startup'));
     const commandListFile = JSON.parse(data);
     const cmdListFileOrig = {};
     Object.assign(cmdListFileOrig, commandListFile);
@@ -23,7 +62,7 @@ client.once('ready', () => {
         files.forEach((file) => {
           commandName = file.slice(0, -3);
           if (!Object.keys(commandListFile).includes(commandName)) {
-            console.log(`New command: ${commandName}!`);
+            logger.info(`New command: ${commandName}!`, sysLogCtx('startup'));
             commandListFile[commandName] = true;
           }
         });
@@ -41,17 +80,27 @@ client.once('ready', () => {
           const jsonCommandListFile = JSON.stringify(commandListFile);
           fs.writeFile('./command_list.json', jsonCommandListFile, 'utf8')
             .then((res) => {
-              console.log('command_list.json written!');
+              logger.info('command_list.json written!', sysLogCtx('startup'));
             })
             .catch((err) => {
-              console.log(err);
+              logger.error(
+                'Error writing command_list.json',
+                errLogCtx(
+                  'startup',
+                  undefined,
+                  undefined,
+                  undefined,
+                  undefined,
+                  err
+                )
+              );
             });
         } else {
-          console.log('No new commands found!');
+          logger.info('No new commands found!', sysLogCtx('startup'));
         }
       })
       .then(() => {
-        console.log('READY!');
+        logger.info('READY!', sysLogCtx('startup'));
       });
   });
 });
@@ -67,13 +116,18 @@ client.on('messageCreate', async (message) => {
     return;
   }
 
+  // Decide if sound or other command
+  const isCommand = message.content.startsWith(CMD_PREFIX);
+
+  // Strip prefix separate command from args
+  const args = message.content.substring(1).toLowerCase().split(' ');
+  const command = args.shift();
+
   // If message is in voice text channel, delete message, don't do command, DM message author that they're not supported currently
   if (message.channel.type === 'GUILD_VOICE') {
-    console.log('----------');
-    const timeStamp = new Date();
-    console.log(timeStamp.toLocaleDateString(), timeStamp.toLocaleTimeString());
-    console.log(
-      `${message.author.username} attempted to use command in voice text channel ${message.channel.name}. Ignoring command and DMing author`
+    logger.warn(
+      `${message.author.username} attempted to use command "${command}" in voice text channel ${message.channel.name}. Ignoring command and DMing author`,
+      warnLogCtx('command', message.author, command, message.channel)
     );
     message.delete();
     message.author.send(
@@ -82,31 +136,27 @@ client.on('messageCreate', async (message) => {
     return;
   }
 
-  // Decide if sound or other command
-  const isCommand = message.content.startsWith(CMD_PREFIX);
-
-  // Strip prefix separate command from args
-  const args = message.content.substring(1).toLowerCase().split(' ');
-  const command = args.shift();
-
-  // Log some info to console
-  console.log('----------');
-  const timeStamp = new Date();
-  console.log(timeStamp.toLocaleDateString(), timeStamp.toLocaleTimeString());
-  console.log(`User: ${message.author.username}`);
-  console.log(`Admin: ${isAdmin(message.author.id, false)}`);
-  console.log(`Command: ${command}`);
-  console.log(`Args: ${args}`);
+  // Log some info
+  logger.info(
+    `${message.author.username} invoked command ${command}`,
+    cmdLogCtx(
+      message.content[0],
+      message.author,
+      command,
+      message.channel,
+      args
+    )
+  );
 
   // Check if slavbot is currently playing a sound, if so refuse command
   if (
     !isPlaying(client) ||
     command === 'stop' ||
-    isAdmin(message.author.id, false)
+    isAdmin(message.author.id, false, undefined)
   ) {
     // Create possible list of sound commands based on if user is admin
     let soundCommands = [...soundManifest.regularSounds];
-    if (isAdmin(message.author.id, false)) {
+    if (isAdmin(message.author.id, false, undefined)) {
       soundManifest.randsounds.forEach((sound) => {
         soundCommands.push(sound);
       });
@@ -120,24 +170,29 @@ client.on('messageCreate', async (message) => {
     if (isCommand || command.includes('rand')) {
       if (
         Object.keys(commandList).includes(command) &&
-        (commandList[command] === true || isAdmin(message.author.id, false))
+        (commandList[command] === true ||
+          isAdmin(message.author.id, false, undefined))
       ) {
         let func = require(`./commands/${command}.js`);
         if (args.length > 0) {
-          func.execute(message, args);
+          func.execute(message, args, logger);
         } else {
-          func.execute(message);
+          func.execute(message, undefined, logger);
         }
       } else if (
         Object.keys(commandList).includes(command) &&
         !commandList[command]
       ) {
-        console.log('----------');
-        console.log('Command disabled');
+        logger.warn(
+          `${message.author.username} invoked disabled command ${command}`,
+          warnLogCtx('command', message.author, command, message.channel)
+        );
         message.author.send(`"${command}" is disabled!`);
       } else {
-        console.log('----------');
-        console.log('Command not found');
+        logger.warn(
+          `${message.author.username} invoked command "${command}" but command was not found`,
+          warnLogCtx('command', message.author, command, message.channel)
+        );
         message.author.send(`"${command}" is not a valid command!`);
       }
     }
@@ -146,23 +201,42 @@ client.on('messageCreate', async (message) => {
     // Check if command is referencing a sound using array we made earlier
     else if (soundCommands.includes(command)) {
       if (message.member.voice.channel) {
-        playSound(command, message.member.voice.channel).catch((err) =>
-          console.log(err)
+        playSound(command, message.member.voice.channel, logger).catch((err) =>
+          logger.error(
+            'Error playing sound from command',
+            errLogCtx(
+              'command',
+              message.author,
+              command,
+              message.channel,
+              args,
+              err
+            )
+          )
         );
       } else {
-        console.log('User was not in a voice channel');
+        logger.warn(
+          `${message.author.username} invoked sound command "${command}" while not in a voice channel`,
+          warnLogCtx('command', message.author, command, message.channel)
+        );
       }
     }
 
     // If command not recognised
     else {
       message.author.send(`"${command}" is not a recognised command, урод.`);
-      console.log('Command not recognised');
+      logger.warn(
+        `${message.author.username} invoked command "${command}" but command was not found`,
+        warnLogCtx('command', message.author, command, message.channel)
+      );
     }
     //delete message when done
     message.delete();
   } else {
-    console.log('Sound already playing! Rejecting command.');
+    logger.warn(
+      'Sound already playing, rejecting command',
+      warnLogCtx('command', message.author, command, message.channel)
+    );
     message.author.send('Wait your damn turn, урод');
     message.delete();
   }
@@ -186,21 +260,28 @@ client.on('voiceStateUpdate', (oldState, newState) => {
       newStateChannel !== null
     ) {
       // For user joining voice, or coming from AFK channel
-      console.log('----------');
-      const timeStamp = new Date();
-      console.log(
-        timeStamp.toLocaleDateString(),
-        timeStamp.toLocaleTimeString()
-      );
       if (newStateChannel === null) {
-        console.log(
-          `${newState.member.user.username} has joined a channel but could not get channel information`
+        logger.warn(
+          `${newState.member.user.username} has joined a channel but could not get channel information`,
+          warnLogCtx(
+            'voiceStateUpdate',
+            newState.member.user,
+            undefined,
+            newStateChannel
+          )
         );
       } else {
-        console.log(
-          `${newState.member.user.username} has joined ${
+        logger.info(
+          `${newState.member.user.username} has joined channel ${
             newStateChannel.name || 'no name'
-          }`
+          }`,
+          infoLogCtx(
+            'voiceStateUpdate',
+            newState.member.user,
+            undefined,
+            newStateChannel,
+            undefined
+          )
         );
       }
       const regUsers = require('./regular_users.json');
@@ -208,35 +289,44 @@ client.on('voiceStateUpdate', (oldState, newState) => {
         const regJoinSound = regUsers[newState.id].joinSound;
         if (regJoinSound.startsWith('rand')) {
           // This bit is to allow random join sounds from a specific rand list
-          randSound([soundManifest[regJoinSound]], newState.channel);
+          randSound([soundManifest[regJoinSound]], newState.channel, logger);
         } else if (regJoinSound !== 'none') {
-          playSound(regJoinSound, newState.channel);
+          playSound(regJoinSound, newState.channel, logger);
         }
       }
     } else if (newStateChannel === null) {
       // For user leaving voice
-      console.log('----------');
-      const timeStamp = new Date();
-      console.log(
-        timeStamp.toLocaleDateString(),
-        timeStamp.toLocaleTimeString()
-      );
-      console.log(
-        `${newState.member.user.username} has left ${oldStateChannel.name}`
+      logger.info(
+        `${newState.member.user.username} has left channel ${oldStateChannel.name}`,
+        infoLogCtx(
+          'voiceStateUpdate',
+          newState.member.user,
+          undefined,
+          oldStateChannel,
+          undefined
+        )
       );
       const regUsers = require('./regular_users.json');
       if (oldState.member.id in regUsers) {
         if (regUsers[oldState.id].leaveSound !== 'none') {
-          playSound(regUsers[newState.id].leaveSound, oldState.channel);
+          playSound(regUsers[newState.id].leaveSound, oldState.channel, logger);
         }
       }
     }
   } else {
-    console.log('----------');
-    console.log(
+    logger.info(
       `${newState.member.user.username} ${
         oldState.channel === null ? 'joined' : 'left'
-      } but slavbot was already playing something`
+      } channel ${
+        oldState.channel.name
+      } but slavbot was already playing something`,
+      infoLogCtx(
+        'voiceStateUpdate',
+        newState.member.user,
+        undefined,
+        oldState.channel != null ? oldState.channel : newState.channel,
+        undefined
+      )
     );
   }
 });
@@ -263,21 +353,30 @@ client.on('presenceUpdate', (oldPresence, newPresence) => {
                 .filter((channel) => channel.isVoice())
                 .first();
 
-              console.log('----------');
-              console.log(
-                `${newPresence.user.username} has gone live on ${activity.name}`
+              logger.info(
+                `${newPresence.user.username} has gone live on ${activity.name}`,
+                infoLogCtx(
+                  'presenceUpdate',
+                  newPresence.user,
+                  undefined,
+                  undefined,
+                  undefined
+                )
               );
 
               playSound(
                 regUsers[newPresence.user.id.toString()].twitchSound,
-                firstChannel
+                firstChannel,
+                logger
               );
             }
           });
         }
       } else {
-        console.log('----------');
-        console.log('oldPresence was null');
+        logger.warn(
+          'oldPresence was null',
+          warnLogCtx('presenceUpdate', newPresence.user, undefined, undefined)
+        );
       }
     }
   }

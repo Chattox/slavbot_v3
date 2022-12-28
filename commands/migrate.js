@@ -2,12 +2,24 @@ const { getVoiceConnection } = require('@discordjs/voice');
 const { User } = require('discord.js');
 const { playSound } = require('../slavsound');
 const { isAdmin } = require('../utils/isAdmin');
+const {
+  infoLogCtx,
+  warnLogCtx,
+  errLogCtx,
+} = require('../utils/loggingContextHelpers');
 
 const migrate = {
   name: 'migrate',
   description: 'moves all users from one channel to another',
-  execute: function (message, args) {
-    if (isAdmin(message.author.id, true)) {
+  execute: function (message, args, logger) {
+    if (isAdmin(message.author.id, true, message)) {
+      const logInfo = [
+        'utility',
+        message.author,
+        'migrate',
+        message.channel,
+        args,
+      ];
       if (args && args.length === 2) {
         const originName = args[0].replace(/_/g, ' ');
         const destinationName = args[1].replace(/_/g, ' ');
@@ -22,11 +34,11 @@ const migrate = {
           }
         });
 
-        console.log('----------');
-        console.log(
-          `Moving all users from ${origin.name} to ${destination.name}...`
+        logger.info(
+          `Moving all users from channel ${origin.name} to channel ${destination.name}`,
+          infoLogCtx(...logInfo)
         );
-        playSound('leeroy', origin);
+        playSound('leeroy', origin, logger);
         const player = getVoiceConnection(message.guildId);
         player.on('destroyed', () => {
           setTimeout(() => {
@@ -38,8 +50,10 @@ const migrate = {
           }, 100);
         });
       } else {
-        console.log('----------');
-        console.log('Incorrect arguments! Needs origin and target channels');
+        logger.warn(
+          'Incorrect arguments, needs origin and target channels',
+          warnLogCtx(...logInfo)
+        );
       }
     }
   },

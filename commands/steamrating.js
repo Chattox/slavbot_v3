@@ -2,12 +2,21 @@ const { formatSteamArgs } = require('../utils/formatSteamArgs');
 const axios = require('axios').default;
 const Fuse = require('fuse.js');
 const { search } = require('ffmpeg-static');
+const { infoLogCtx, warnLogCtx } = require('../utils/loggingContextHelpers');
 
 const steamrating = {
   name: 'steamrating',
   description: 'returns steam rating for given game title',
-  execute: async function (message, args) {
+  execute: async function (message, args, logger) {
     const searchTerm = formatSteamArgs(args);
+
+    const logInfo = [
+      'utility',
+      message.author,
+      'steamrating',
+      message.channel,
+      args,
+    ];
 
     if (searchTerm) {
       const searchOptions = {
@@ -17,14 +26,21 @@ const steamrating = {
       const appList = require('../steam_cache.json');
       const fuse = new Fuse(appList, searchOptions);
 
-      console.log(`Starting appID search for ${searchTerm}...`);
+      logger.info(
+        `Starting appID search for ${searchTerm}`,
+        infoLogCtx(...logInfo)
+      );
 
       const searchResult = fuse.search(searchTerm, { limit: 1 })[0].item;
 
-      console.log(
-        `Found: ${searchResult.name} with appID: ${searchResult.appid}`
+      logger.info(
+        `Found: ${searchResult.name} with appID: ${searchResult.appid}`,
+        infoLogCtx(...logInfo)
       );
-      console.log(`Checking Steam rating for ${searchResult.name}...`);
+      logger.info(
+        `Checking Steam rating for ${searchResult.name}`,
+        infoLogCtx(...logInfo)
+      );
 
       const axiosOptions = {
         method: 'GET',
@@ -46,12 +62,14 @@ const steamrating = {
             `Reviews: **${summary.review_score_desc}** with ${percentPostive}% positive out of ${summary.total_reviews} reviews\n\n` +
             "NOTE: The number of total reviews will differ slightly than what Steam's store page says. This is because Steam is dumb and definitely nothing to do with anything I did."
         );
-        console.log(
-          `Steam rating found (${percentPostive}% positive) and posted to chat!`
+
+        logger.info(
+          `Steam rating found (${percentPostive}% positive) and posted to chat`,
+          infoLogCtx(...logInfo)
         );
       });
     } else {
-      console.log('No arguments given!');
+      logger.warn('No arguments given', warnLogCtx(...logInfo));
       message.channel.send(
         "I can't give you a rating if you don't give me a game!"
       );

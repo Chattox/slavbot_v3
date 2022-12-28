@@ -2,13 +2,25 @@ const { isAdmin } = require('../utils/isAdmin');
 const { shuffleArray } = require('../utils/shuffleArray');
 const { logSecretSantaPairs } = require('../utils/logSecretSantaPairs');
 const regUsers = require('../regular_users.json');
+const {
+  infoLogCtx,
+  warnLogCtx,
+  errLogCtx,
+} = require('../utils/loggingContextHelpers');
 
 const dedmoroz = {
   name: 'dedmoroz',
   description:
     'runs a secret santa-like function using a secret santa role assigned to particiants, DMs all participants with their giftee',
-  execute: function (message, args) {
-    if (isAdmin(message.author.id, true)) {
+  execute: function (message, args, logger) {
+    if (isAdmin(message.author.id, true, message)) {
+      const logInfo = [
+        'utility',
+        message.author,
+        'dedmoroz',
+        message.channel,
+        args,
+      ];
       if (args && /\d{2}\/\d{2}\/\d{4}/g.test(args[0])) {
         const dateArg = args[0].split('/').map(Number);
         const [saleDay, saleMonth, saleYear] = dateArg;
@@ -40,10 +52,11 @@ const dedmoroz = {
         usersWithSantaRole.each((santa) => santas.push(santa.user));
 
         // Log some info
-        console.log('----- Secret Santas -----');
-        santas.forEach((santa) => console.log(santa.username));
-        console.log('----------');
-        console.log('Shuffling...');
+        const santaNames = santas.map((santa) => santa.username);
+        logger.info(`Secret Santas: ${santaNames}`, {
+          ...infoLogCtx(...logInfo),
+          santas: santaNames,
+        });
 
         // Shuffle santa array
         shuffleArray(santas);
@@ -51,7 +64,7 @@ const dedmoroz = {
         const pairings = []; // array to store santa pairings to write to file for reference in case something goes wrong
 
         // Go through each santa user obj and DM them with their giftee and the rules
-        console.log('DMing santas...');
+        logger.info('DMing santas', infoLogCtx(...logInfo));
         santas.forEach((santa, i) => {
           const giftee = santas[(i + 1) % santas.length];
           const gifteeSteamName = regUsers[giftee.id]?.steamId;
@@ -76,15 +89,26 @@ const dedmoroz = {
                 `P.S. Make sure your wishlist is set to public!`
             )
             .then((res) => {
-              console.log(`${i + 1} out of ${santas.length} DMs sent!`);
+              logger.info(
+                `${i + 1} out of ${santas.length} DMs sent`,
+                infoLogCtx(...logInfo)
+              );
               if (i + 1 >= santas.length) {
-                console.log('Done!');
+                logger.info('Santa DMing complete', infoLogCtx(...logInfo));
               }
             })
-            .catch((err) => console.log(err));
+            .catch((err) =>
+              logger.error(`Error DMing santa ${santa.username}`, {
+                ...errLogCtx(...logInfo, err),
+              })
+            );
         });
-        logSecretSantaPairs(pairings, sendGiftStartDate);
+        logSecretSantaPairs(pairings, sendGiftStartDate, message, args, logger);
       } else {
+        logger.warn(
+          'Dedmoroz command invoked without correct date argument',
+          warnLogCtx(...logInfo)
+        );
         message.author.send(
           'Dedmoroz requires a date argument formatted dd/mm/yyyy'
         );

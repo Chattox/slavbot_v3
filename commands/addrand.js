@@ -1,34 +1,51 @@
 const fs = require('fs').promises;
 const { isAdmin } = require('../utils/isAdmin');
+const {
+  infoLogCtx,
+  warnLogCtx,
+  errLogCtx,
+} = require('../utils/loggingContextHelpers');
 
 const addrand = {
   name: 'addrand',
   description: 'add sounds to specific random lists',
-  execute: function (message, args) {
-    if (isAdmin(message.author.id, true)) {
+  execute: function (message, args, logger) {
+    if (isAdmin(message.author.id, true, message)) {
       if (args) {
         const soundManifest = require('../sound_manifest.json');
         const target = args[0];
         const targetList = soundManifest[target];
         const sound = args[1];
 
+        const logInfo = [
+          'utility',
+          message.author,
+          'addrand',
+          message.channel,
+          args,
+        ];
+
         // First check if the target list is randSounds, because that's what setRand is for
         if (target === 'randsounds') {
-          console.log('----------');
-          console.log(
-            'To set a sound as random only, use setrand as this is for adding to rand lists'
+          logger.warn(
+            'To set a sound as random only, use setrand as addrand is for adding to rand lists',
+            warnLogCtx(...logInfo)
           );
           return false;
         }
 
         if (soundManifest.regularSounds.includes(sound)) {
           if (targetList === undefined) {
-            console.log('----------');
-            console.log(`Random list '${target}' not found!`);
+            logger.warn(
+              `Random list ${target} not found`,
+              warnLogCtx(...logInfo)
+            );
             return false;
           } else if (targetList.includes(sound)) {
-            console.log('----------');
-            console.log(`${sound} already exists in ${target}!`);
+            logger.warn(
+              `Sound ${sound} already exists in list ${target}`,
+              warnLogCtx(...logInfo)
+            );
             return false;
           }
 
@@ -36,19 +53,29 @@ const addrand = {
           const jsonSoundManifest = JSON.stringify(soundManifest);
           fs.writeFile('./sound_manifest.json', jsonSoundManifest, 'utf8')
             .then((res) => {
-              console.log(`'${sound}' has been added to ${target}!`);
+              logger.info(
+                `Sound ${sound} has been added to list ${target}`,
+                infoLogCtx(...logInfo)
+              );
             })
             .catch((err) => {
-              console.log(err);
+              logger.error(`Error writing to file`, {
+                ...errLogCtx(...logInfo),
+                error: err,
+              });
             });
         } else {
-          console.log('----------');
-          console.log(`${sound} is not currently in the sound manifest!`);
+          logger.warn(
+            `Cannot add sound ${sound}; not found in sound manifest`,
+            warnLogCtx(...logInfo)
+          );
           return false;
         }
       } else {
-        console.log('----------');
-        console.log('No arguments given!');
+        logger.warn(
+          `Cannot add sound to randlist; no arguments given`,
+          warnLogCtx(...logInfo)
+        );
       }
     }
   },

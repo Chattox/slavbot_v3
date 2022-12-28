@@ -6,7 +6,7 @@ const stop = {
   name: 'stop',
   description: 'stops slavbot from playing whatever is currently playing',
   execute: (message) => {
-    if (isAdmin(message.author.id, true)) {
+    if (isAdmin(message.author.id, true, message)) {
       getVoiceConnections().forEach((connection) => {
         connection.destroy();
       });

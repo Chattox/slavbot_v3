@@ -5,9 +5,9 @@ const create = {
   name: 'create',
   description:
     'creates the sound_manifest.regularSounds array from filenames in the ./sounds directory',
-  execute: function (message) {
-    if (isAdmin(message.author.id, true)) {
-      createSoundManifest();
+  execute: function (message, args, logger) {
+    if (isAdmin(message.author.id, true, message)) {
+      createSoundManifest(message, args, logger);
     }
   },
 };

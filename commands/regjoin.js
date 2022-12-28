@@ -3,16 +3,24 @@ const regUsers = require('../regular_users');
 const fs = require('fs').promises;
 const { isAdmin } = require('../utils/isAdmin');
 const { join } = require('path');
+const { infoLogCtx, warnLogCtx } = require('../utils/loggingContextHelpers');
 
 const regjoin = {
   name: 'regjoin',
   description:
     'updates the join sound for given reguser. Set to "none" to remove',
-  execute: function (message, args) {
+  execute: function (message, args, logger) {
+    const logInfo = [
+      'utility',
+      message.author,
+      'regjoin',
+      message.channel,
+      args,
+    ];
     if (args) {
       const userID = args[0];
       const joinSound = args[1];
-      if (isAdmin(message.author.id, true)) {
+      if (isAdmin(message.author.id, true, message)) {
         if (
           joinSound === 'none' ||
           ((soundManifest.regularSounds.includes(joinSound) ||
@@ -23,21 +31,21 @@ const regjoin = {
           const jsonRegUsers = JSON.stringify(regUsers);
           fs.writeFile('./regular_users.json', jsonRegUsers, 'utf8').then(
             () => {
-              console.log(
-                `User ${regUsers[userID].name} join sound updated to ${joinSound}`
+              logger.info(
+                `User ${regUsers[userID].name} join sound updated to ${joinSound}`,
+                infoLogCtx(...logInfo)
               );
             }
           );
         } else {
-          console.log('----------');
-          console.log('User ID or sound were not recognised');
-          console.log(`User ID: ${userID}`);
-          console.log(`Join sound: ${joinSound}`);
+          logger.warn(
+            `User ID or sound were not recognised. ID: ${userID}, Sound: ${joinSound}`,
+            warnLogCtx(...logInfo)
+          );
         }
       }
     } else {
-      console.log('----------');
-      console.log('No arguments given!');
+      logger.warn('No arguments given', warnLogCtx(...logInfo));
     }
   },
 };
