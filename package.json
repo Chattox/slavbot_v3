@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/Chattox/slavbot_v3#readme",
   "dependencies": {
-    "@discordjs/opus": "^0.7.0",
+    "@discordjs/opus": "^0.8.0",
     "@discordjs/voice": "^0.8.0",
     "axios": "^0.26.1",
     "discord.js": "^13.6.0",
