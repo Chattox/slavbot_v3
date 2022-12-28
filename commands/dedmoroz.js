@@ -14,6 +14,13 @@ const dedmoroz = {
     'runs a secret santa-like function using a secret santa role assigned to particiants, DMs all participants with their giftee',
   execute: function (message, args, logger) {
     if (isAdmin(message.author.id, true, message)) {
+      const logInfo = [
+        'utility',
+        message.author,
+        'dedmoroz',
+        message.channel,
+        args,
+      ];
       if (args && /\d{2}\/\d{2}\/\d{4}/g.test(args[0])) {
         const dateArg = args[0].split('/').map(Number);
         const [saleDay, saleMonth, saleYear] = dateArg;
@@ -29,13 +36,6 @@ const dedmoroz = {
         const sendGiftEndTimestamp = Math.floor(
           sendGiftEndDate.getTime() / 1000
         );
-        const logInfo = [
-          'utility',
-          message.author,
-          'dedmoroz',
-          message.channel,
-          args,
-        ];
 
         // Loop through every user in the guild the message was sent to
         // Return a collection of all users with the secret santa role
@@ -103,7 +103,7 @@ const dedmoroz = {
               })
             );
         });
-        logSecretSantaPairs(pairings, sendGiftStartDate);
+        logSecretSantaPairs(pairings, sendGiftStartDate, message, args, logger);
       } else {
         logger.warn(
           'Dedmoroz command invoked without correct date argument',
