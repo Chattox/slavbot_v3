@@ -318,7 +318,9 @@ client.on('voiceStateUpdate', (oldState, newState) => {
       `${newState.member.user.username} ${
         oldState.channel === null ? 'joined' : 'left'
       } channel ${
-        oldState.channel.name
+        oldState.channel === null
+          ? newState.channel.name
+          : oldState.channel.name
       } but slavbot was already playing something`,
       infoLogCtx(
         'voiceStateUpdate',
